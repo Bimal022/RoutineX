@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import '../models/expense.dart';
 
 class ExpenseProvider extends ChangeNotifier {
-  List<Expense> _expenses = [];
+  final List<Expense> _expenses = [];
 
   List<Expense> get expenses => _expenses;
 

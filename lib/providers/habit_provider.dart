@@ -3,8 +3,8 @@ import '../models/habit.dart';
 import '../models/habit_log.dart';
 
 class HabitProvider extends ChangeNotifier {
-  List<Habit> _habits = [];
-  List<HabitLog> _logs = [];
+  final List<Habit> _habits = [];
+  final List<HabitLog> _logs = [];
 
   List<Habit> get habits => _habits;
 
