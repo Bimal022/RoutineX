@@ -120,7 +120,7 @@ class HomeScreen extends StatelessWidget {
             ),
 
             // Habit list
-            habitProvider.habits.isEmpty
+            habitProvider.todaysHabits.isEmpty
                 ? SliverToBoxAdapter(
                     child: Padding(
                       padding: const EdgeInsets.symmetric(
@@ -131,17 +131,14 @@ class HomeScreen extends StatelessWidget {
                     ),
                   )
                 : SliverList(
-                    delegate: SliverChildBuilderDelegate(
-                      (context, index) {
-                        return Padding(
-                          padding: const EdgeInsets.symmetric(horizontal: 20),
-                          child: HabitTile(
-                            habit: habitProvider.habits[index],
-                          ),
-                        );
-                      },
-                      childCount: habitProvider.habits.length,
-                    ),
+                    delegate: SliverChildBuilderDelegate((context, index) {
+                      return Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 20),
+                        child: HabitTile(
+                          habit: habitProvider.todaysHabits[index],
+                        ),
+                      );
+                    }, childCount: habitProvider.todaysHabits.length),
                   ),
 
             // Spending section
@@ -195,7 +192,9 @@ class HomeScreen extends StatelessWidget {
                     ? _emptyExpenses(context)
                     : Column(
                         children: expenseProvider.todayExpenses
-                            .map((e) => _expenseTile(context, e, expenseProvider))
+                            .map(
+                              (e) => _expenseTile(context, e, expenseProvider),
+                            )
                             .toList(),
                       ),
               ),
@@ -221,10 +220,7 @@ class HomeScreen extends StatelessWidget {
           end: Alignment.bottomRight,
         ),
         borderRadius: BorderRadius.circular(16),
-        border: Border.all(
-          color: AppTheme.accent.withOpacity(0.3),
-          width: 1,
-        ),
+        border: Border.all(color: AppTheme.accent.withOpacity(0.3), width: 1),
       ),
       child: Row(
         children: [
@@ -262,20 +258,13 @@ class HomeScreen extends StatelessWidget {
         const SizedBox(height: 2),
         Text(
           label,
-          style: const TextStyle(
-            color: AppTheme.textSecondary,
-            fontSize: 12,
-          ),
+          style: const TextStyle(color: AppTheme.textSecondary, fontSize: 12),
         ),
       ],
     );
   }
 
-  Widget _expenseTile(
-    BuildContext context,
-    expense,
-    ExpenseProvider provider,
-  ) {
+  Widget _expenseTile(BuildContext context, expense, ExpenseProvider provider) {
     final Map<String, String> emojis = {
       'Food': '🍔',
       'Transport': '🚗',
@@ -397,10 +386,7 @@ class HomeScreen extends StatelessWidget {
         decoration: BoxDecoration(
           color: AppTheme.surface,
           borderRadius: BorderRadius.circular(16),
-          border: Border.all(
-            color: AppTheme.accent.withOpacity(0.3),
-            width: 1,
-          ),
+          border: Border.all(color: AppTheme.accent.withOpacity(0.3), width: 1),
         ),
         child: const Center(
           child: Column(
@@ -453,8 +439,18 @@ class HomeScreen extends StatelessWidget {
   String _todayDate() {
     final now = DateTime.now();
     const months = [
-      'Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun',
-      'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec',
+      'Jan',
+      'Feb',
+      'Mar',
+      'Apr',
+      'May',
+      'Jun',
+      'Jul',
+      'Aug',
+      'Sep',
+      'Oct',
+      'Nov',
+      'Dec',
     ];
     return "${months[now.month - 1]} ${now.day}, ${now.year}";
   }

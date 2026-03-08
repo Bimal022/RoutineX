@@ -12,6 +12,7 @@ class HabitTile extends StatelessWidget {
   Widget build(BuildContext context) {
     final provider = Provider.of<HabitProvider>(context);
     final done = provider.isCompleted(habit.id);
+    final isOneTime = habit.type == HabitType.oneTime;
 
     return Dismissible(
       key: Key(habit.id),
@@ -35,11 +36,13 @@ class HabitTile extends StatelessWidget {
           padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
           decoration: BoxDecoration(
             color: done
-                ? AppTheme.primary.withOpacity(0.15)
+                ? AppTheme.primary.withOpacity(0.12)
                 : AppTheme.surface,
             borderRadius: BorderRadius.circular(16),
             border: Border.all(
-              color: done ? AppTheme.primary.withOpacity(0.5) : AppTheme.surfaceLight,
+              color: done
+                  ? AppTheme.primary.withOpacity(0.4)
+                  : AppTheme.surfaceLight,
               width: 1,
             ),
           ),
@@ -48,38 +51,82 @@ class HabitTile extends StatelessWidget {
               Text(habit.emoji, style: const TextStyle(fontSize: 22)),
               const SizedBox(width: 12),
               Expanded(
-                child: Text(
-                  habit.name,
-                  style: TextStyle(
-                    color: done
-                        ? AppTheme.textSecondary
-                        : AppTheme.textPrimary,
-                    fontSize: 15,
-                    fontWeight: FontWeight.w600,
-                    decoration: done ? TextDecoration.lineThrough : null,
-                  ),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      habit.name,
+                      style: TextStyle(
+                        color: done
+                            ? AppTheme.textSecondary
+                            : AppTheme.textPrimary,
+                        fontSize: 15,
+                        fontWeight: FontWeight.w600,
+                        decoration:
+                            done ? TextDecoration.lineThrough : null,
+                      ),
+                    ),
+                    const SizedBox(height: 3),
+                    _scheduleBadge(isOneTime),
+                  ],
                 ),
               ),
+              const SizedBox(width: 10),
               AnimatedContainer(
                 duration: const Duration(milliseconds: 250),
                 width: 28,
                 height: 28,
                 decoration: BoxDecoration(
-                  color: done ? AppTheme.primary : Colors.transparent,
+                  color:
+                      done ? AppTheme.primary : Colors.transparent,
                   shape: BoxShape.circle,
                   border: Border.all(
-                    color: done ? AppTheme.primary : AppTheme.textSecondary,
+                    color: done
+                        ? AppTheme.primary
+                        : AppTheme.textSecondary,
                     width: 2,
                   ),
                 ),
                 child: done
-                    ? const Icon(Icons.check, size: 16, color: Colors.white)
+                    ? const Icon(Icons.check,
+                        size: 16, color: Colors.white)
                     : null,
               ),
             ],
           ),
         ),
       ),
+    );
+  }
+
+  Widget _scheduleBadge(bool isOneTime) {
+    if (isOneTime) {
+      return _badge("One-time", AppTheme.accent, Icons.looks_one_outlined);
+    }
+    if (habit.weekdays.isEmpty) {
+      return _badge("Every day", AppTheme.secondary, Icons.repeat_rounded);
+    }
+    const dayNames = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
+    final sorted = habit.weekdays.toList()..sort();
+    final label = sorted.map((d) => dayNames[d - 1]).join(' · ');
+    return _badge(label, AppTheme.primary, Icons.repeat_rounded);
+  }
+
+  Widget _badge(String label, Color color, IconData icon) {
+    return Row(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        Icon(icon, size: 11, color: color.withOpacity(0.8)),
+        const SizedBox(width: 3),
+        Text(
+          label,
+          style: TextStyle(
+            color: color.withOpacity(0.9),
+            fontSize: 11,
+            fontWeight: FontWeight.w600,
+          ),
+        ),
+      ],
     );
   }
 }

@@ -8,12 +8,25 @@ class HabitProvider extends ChangeNotifier {
 
   List<Habit> get habits => _habits;
 
-  void addHabit(String name, String emoji) {
+  /// Only habits scheduled for today
+  List<Habit> get todaysHabits {
+    final today = DateTime.now();
+    return _habits.where((h) => h.isScheduledFor(today)).toList();
+  }
+
+  void addHabit(
+    String name,
+    String emoji, {
+    HabitType type = HabitType.recurring,
+    List<int> weekdays = const [],
+  }) {
     _habits.add(
       Habit(
         id: DateTime.now().millisecondsSinceEpoch.toString(),
         name: name,
         emoji: emoji,
+        type: type,
+        weekdays: weekdays,
       ),
     );
     notifyListeners();
@@ -34,13 +47,10 @@ class HabitProvider extends ChangeNotifier {
           log.date.month == today.month &&
           log.date.year == today.year,
     );
-
     if (index >= 0) {
       _logs[index].completed = !_logs[index].completed;
     } else {
-      _logs.add(
-        HabitLog(habitId: habitId, date: today, completed: true),
-      );
+      _logs.add(HabitLog(habitId: habitId, date: today, completed: true));
     }
     notifyListeners();
   }
@@ -60,10 +70,12 @@ class HabitProvider extends ChangeNotifier {
 
   int completedToday() {
     DateTime today = DateTime.now();
+    final scheduled = todaysHabits.map((h) => h.id).toSet();
     return _logs
         .where(
           (l) =>
               l.completed &&
+              scheduled.contains(l.habitId) &&
               l.date.day == today.day &&
               l.date.month == today.month &&
               l.date.year == today.year,
@@ -72,26 +84,33 @@ class HabitProvider extends ChangeNotifier {
   }
 
   double get completionPercent {
-    if (_habits.isEmpty) return 0.0;
-    return completedToday() / _habits.length;
+    final total = todaysHabits.length;
+    if (total == 0) return 0.0;
+    return completedToday() / total;
   }
 
-  /// Returns number of days in a row where ALL habits were completed (streak)
   int get currentStreak {
     if (_habits.isEmpty) return 0;
     int streak = 0;
     DateTime day = DateTime.now();
-
     for (int i = 0; i < 365; i++) {
-      final dayLogs = _logs.where(
-        (l) =>
-            l.completed &&
-            l.date.day == day.day &&
-            l.date.month == day.month &&
-            l.date.year == day.year,
-      );
-      final completed = dayLogs.length;
-      if (completed == _habits.length && _habits.isNotEmpty) {
+      final scheduledOnDay =
+          _habits.where((h) => h.isScheduledFor(day)).toList();
+      if (scheduledOnDay.isEmpty) {
+        day = day.subtract(const Duration(days: 1));
+        continue;
+      }
+      final completedOnDay = _logs
+          .where(
+            (l) =>
+                l.completed &&
+                scheduledOnDay.any((h) => h.id == l.habitId) &&
+                l.date.day == day.day &&
+                l.date.month == day.month &&
+                l.date.year == day.year,
+          )
+          .length;
+      if (completedOnDay == scheduledOnDay.length) {
         streak++;
         day = day.subtract(const Duration(days: 1));
       } else {
