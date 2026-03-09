@@ -1,10 +1,12 @@
 import 'package:flutter/material.dart';
 import '../models/habit.dart';
 import '../models/habit_log.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 
 class HabitProvider extends ChangeNotifier {
   final List<Habit> _habits = [];
   final List<HabitLog> _logs = [];
+  final FirebaseFirestore _firestore = FirebaseFirestore.instance;
 
   List<Habit> get habits => _habits;
 
@@ -14,32 +16,74 @@ class HabitProvider extends ChangeNotifier {
     return _habits.where((h) => h.isScheduledFor(today)).toList();
   }
 
-  void addHabit(
+  Future<void> loadHabits() async {
+    final snapshot = await _firestore.collection('habits').get();
+
+    _habits.clear();
+
+    for (var doc in snapshot.docs) {
+      final data = doc.data();
+
+      _habits.add(
+        Habit(
+          id: data['id'],
+          name: data['name'],
+          emoji: data['emoji'],
+          weekdays: List<int>.from(data['weekdays'] ?? []),
+        ),
+      );
+    }
+
+    notifyListeners();
+  }
+
+  Future<void> addHabit(
     String name,
     String emoji, {
     HabitType type = HabitType.recurring,
     List<int> weekdays = const [],
-  }) {
-    _habits.add(
-      Habit(
-        id: DateTime.now().millisecondsSinceEpoch.toString(),
+  }) async {
+    try {
+      final id = DateTime.now().millisecondsSinceEpoch.toString();
+
+      Habit habit = Habit(
+        id: id,
         name: name,
         emoji: emoji,
         type: type,
         weekdays: weekdays,
-      ),
-    );
-    notifyListeners();
+      );
+
+      _habits.add(habit);
+
+      await _firestore.collection('habits').doc(id).set({
+        'id': id,
+        'name': name,
+        'emoji': emoji,
+        'type': type.toString(),
+        'weekdays': weekdays,
+      });
+
+      print("Habit added to Firestore");
+
+      notifyListeners();
+    } catch (e) {
+      print("Firestore error: $e");
+    }
   }
 
-  void removeHabit(String habitId) {
+  Future<void> removeHabit(String habitId) async {
     _habits.removeWhere((h) => h.id == habitId);
     _logs.removeWhere((l) => l.habitId == habitId);
+
+    await _firestore.collection('habits').doc(habitId).delete();
+
     notifyListeners();
   }
 
-  void toggleHabit(String habitId) {
+  Future<void> toggleHabit(String habitId) async {
     DateTime today = DateTime.now();
+
     final index = _logs.indexWhere(
       (log) =>
           log.habitId == habitId &&
@@ -47,11 +91,23 @@ class HabitProvider extends ChangeNotifier {
           log.date.month == today.month &&
           log.date.year == today.year,
     );
+
+    bool completed;
+
     if (index >= 0) {
       _logs[index].completed = !_logs[index].completed;
+      completed = _logs[index].completed;
     } else {
       _logs.add(HabitLog(habitId: habitId, date: today, completed: true));
+      completed = true;
     }
+
+    await _firestore.collection('habit_logs').add({
+      'habitId': habitId,
+      'date': today.toIso8601String(),
+      'completed': completed,
+    });
+
     notifyListeners();
   }
 
@@ -94,8 +150,9 @@ class HabitProvider extends ChangeNotifier {
     int streak = 0;
     DateTime day = DateTime.now();
     for (int i = 0; i < 365; i++) {
-      final scheduledOnDay =
-          _habits.where((h) => h.isScheduledFor(day)).toList();
+      final scheduledOnDay = _habits
+          .where((h) => h.isScheduledFor(day))
+          .toList();
       if (scheduledOnDay.isEmpty) {
         day = day.subtract(const Duration(days: 1));
         continue;

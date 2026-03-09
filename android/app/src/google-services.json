@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "609971100444",
+    "project_id": "routinex-1bc5b",
+    "storage_bucket": "routinex-1bc5b.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:609971100444:android:0487049c6c0391192038d9",
+        "android_client_info": {
+          "package_name": "com.bimal.routinex"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAozmZowy4OmsnZjXKnQASHuc62xhPz4YI"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
