@@ -1,8 +1,9 @@
-import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:routinex/firebase_options.dart';
+import 'package:firebase_core/firebase_core.dart';
+import 'package:routinex/auth/screens/auth_wrapper.dart';
 import 'package:routinex/widgets/layout/stats_screen.dart';
+
 import 'providers/habit_provider.dart';
 import 'providers/expense_provider.dart';
 import 'screens/home_screen.dart';
@@ -10,8 +11,7 @@ import 'theme.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-
-  await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
+  await Firebase.initializeApp();
   runApp(
     MultiProvider(
       providers: [
@@ -32,7 +32,7 @@ class RoutineXApp extends StatelessWidget {
       title: 'RoutineX',
       debugShowCheckedModeBanner: false,
       theme: AppTheme.dark,
-      home: const MainShell(),
+      home: const AuthWrapper(),
     );
   }
 }
@@ -47,12 +47,18 @@ class MainShell extends StatefulWidget {
 class _MainShellState extends State<MainShell> {
   int _currentIndex = 0;
 
-  final List<Widget> _screens = const [HomeScreen(), StatsScreen()];
+  final List<Widget> _screens = const [
+    HomeScreen(),
+    StatsScreen(),
+  ];
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: IndexedStack(index: _currentIndex, children: _screens),
+      body: IndexedStack(
+        index: _currentIndex,
+        children: _screens,
+      ),
       bottomNavigationBar: Container(
         decoration: const BoxDecoration(
           border: Border(
@@ -66,12 +72,12 @@ class _MainShellState extends State<MainShell> {
             BottomNavigationBarItem(
               icon: Icon(Icons.home_outlined),
               activeIcon: Icon(Icons.home_rounded),
-              label: "Home",
+              label: 'Home',
             ),
             BottomNavigationBarItem(
               icon: Icon(Icons.bar_chart_outlined),
               activeIcon: Icon(Icons.bar_chart_rounded),
-              label: "Stats",
+              label: 'Stats',
             ),
           ],
         ),
