@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:routinex/auth/provider/user_provider.dart';
 import 'package:routinex/widgets/checkbox/add_expense_sheet.dart';
 import 'package:routinex/widgets/checkbox/add_habit_sheet.dart';
 
@@ -15,197 +16,197 @@ class HomeScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final habitProvider = Provider.of<HabitProvider>(context);
+    final userProvider = Provider.of<UserProvider>(context);
     final expenseProvider = Provider.of<ExpenseProvider>(context);
-    habitProvider.loadHabits();
-    return RefreshIndicator(
-      onRefresh: () async => habitProvider.loadHabits(),
-      child: Scaffold(
-        body: SafeArea(
-          child: CustomScrollView(
-            slivers: [
-              // Header
-              SliverToBoxAdapter(
-                child: Padding(
-                  padding: const EdgeInsets.fromLTRB(20, 20, 20, 0),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(
-                            _greeting(),
-                            style: const TextStyle(
-                              color: AppTheme.textSecondary,
-                              fontSize: 14,
-                            ),
-                          ),
-                          const Text(
-                            "RoutineX",
-                            style: TextStyle(
-                              color: AppTheme.textPrimary,
-                              fontSize: 28,
-                              fontWeight: FontWeight.w900,
-                              letterSpacing: -1,
-                            ),
-                          ),
-                        ],
-                      ),
-                      Container(
-                        padding: const EdgeInsets.symmetric(
-                          horizontal: 12,
-                          vertical: 8,
-                        ),
-                        decoration: BoxDecoration(
-                          color: AppTheme.surface,
-                          borderRadius: BorderRadius.circular(12),
-                          border: Border.all(
-                            color: AppTheme.surfaceLight,
-                            width: 1,
-                          ),
-                        ),
-                        child: Text(
-                          _todayDate(),
+
+    return Scaffold(
+      body: SafeArea(
+        child: CustomScrollView(
+          slivers: [
+            // Header
+            SliverToBoxAdapter(
+              child: Padding(
+                padding: const EdgeInsets.fromLTRB(20, 20, 20, 0),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          _greeting(),
                           style: const TextStyle(
                             color: AppTheme.textSecondary,
-                            fontSize: 12,
-                            fontWeight: FontWeight.w600,
+                            fontSize: 14,
                           ),
                         ),
-                      ),
-                    ],
-                  ),
-                ),
-              ),
-
-              // Progress
-              SliverToBoxAdapter(
-                child: Padding(
-                  padding: const EdgeInsets.all(20),
-                  child: const ProgressBar(),
-                ),
-              ),
-
-              // Habits section header
-              SliverToBoxAdapter(
-                child: Padding(
-                  padding: const EdgeInsets.fromLTRB(20, 4, 20, 12),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      const Text(
-                        "Habits",
-                        style: TextStyle(
-                          color: AppTheme.textPrimary,
-                          fontSize: 18,
-                          fontWeight: FontWeight.w800,
-                        ),
-                      ),
-                      GestureDetector(
-                        onTap: () => _showAddHabit(context),
-                        child: Container(
-                          padding: const EdgeInsets.all(6),
-                          decoration: BoxDecoration(
-                            color: AppTheme.primary.withOpacity(0.15),
-                            shape: BoxShape.circle,
-                          ),
-                          child: const Icon(
-                            Icons.add,
-                            color: AppTheme.primary,
-                            size: 20,
+                        Text(
+                          userProvider.firstName.isNotEmpty
+                              ? userProvider.firstName
+                              : "RoutineX",
+                          style: const TextStyle(
+                            color: AppTheme.textPrimary,
+                            fontSize: 28,
+                            fontWeight: FontWeight.w900,
+                            letterSpacing: -1,
                           ),
                         ),
+                      ],
+                    ),
+                    Container(
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 12,
+                        vertical: 8,
                       ),
-                    ],
-                  ),
+                      decoration: BoxDecoration(
+                        color: AppTheme.surface,
+                        borderRadius: BorderRadius.circular(12),
+                        border: Border.all(
+                          color: AppTheme.surfaceLight,
+                          width: 1,
+                        ),
+                      ),
+                      child: Text(
+                        _todayDate(),
+                        style: const TextStyle(
+                          color: AppTheme.textSecondary,
+                          fontSize: 12,
+                          fontWeight: FontWeight.w600,
+                        ),
+                      ),
+                    ),
+                  ],
                 ),
               ),
+            ),
 
-              // Habit list
-              habitProvider.todaysHabits.isEmpty
-                  ? SliverToBoxAdapter(
-                      child: Padding(
-                        padding: const EdgeInsets.symmetric(
-                          horizontal: 20,
-                          vertical: 8,
-                        ),
-                        child: _emptyHabits(context),
+            // Progress
+            SliverToBoxAdapter(
+              child: Padding(
+                padding: const EdgeInsets.all(20),
+                child: const ProgressBar(),
+              ),
+            ),
+
+            // Habits section header
+            SliverToBoxAdapter(
+              child: Padding(
+                padding: const EdgeInsets.fromLTRB(20, 4, 20, 12),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    const Text(
+                      "Habits",
+                      style: TextStyle(
+                        color: AppTheme.textPrimary,
+                        fontSize: 18,
+                        fontWeight: FontWeight.w800,
                       ),
-                    )
-                  : SliverList(
-                      delegate: SliverChildBuilderDelegate((context, index) {
+                    ),
+                    GestureDetector(
+                      onTap: () => _showAddHabit(context),
+                      child: Container(
+                        padding: const EdgeInsets.all(6),
+                        decoration: BoxDecoration(
+                          color: AppTheme.primary.withOpacity(0.15),
+                          shape: BoxShape.circle,
+                        ),
+                        child: const Icon(
+                          Icons.add,
+                          color: AppTheme.primary,
+                          size: 20,
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+
+            // Habit list
+            habitProvider.todaysHabits.isEmpty
+                ? SliverToBoxAdapter(
+                    child: Padding(
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 20,
+                        vertical: 8,
+                      ),
+                      child: _emptyHabits(context),
+                    ),
+                  )
+                : SliverList(
+                    delegate: SliverChildBuilderDelegate(
+                      (context, index) {
                         return Padding(
                           padding: const EdgeInsets.symmetric(horizontal: 20),
                           child: HabitTile(
                             habit: habitProvider.todaysHabits[index],
                           ),
                         );
-                      }, childCount: habitProvider.todaysHabits.length),
+                      },
+                      childCount: habitProvider.todaysHabits.length,
                     ),
-
-              // Spending section
-              SliverToBoxAdapter(
-                child: Padding(
-                  padding: const EdgeInsets.fromLTRB(20, 24, 20, 12),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      const Text(
-                        "Today's Spending",
-                        style: TextStyle(
-                          color: AppTheme.textPrimary,
-                          fontSize: 18,
-                          fontWeight: FontWeight.w800,
-                        ),
-                      ),
-                      GestureDetector(
-                        onTap: () => _showAddExpense(context),
-                        child: Container(
-                          padding: const EdgeInsets.all(6),
-                          decoration: BoxDecoration(
-                            color: AppTheme.accent.withOpacity(0.15),
-                            shape: BoxShape.circle,
-                          ),
-                          child: const Icon(
-                            Icons.add,
-                            color: AppTheme.accent,
-                            size: 20,
-                          ),
-                        ),
-                      ),
-                    ],
                   ),
-                ),
-              ),
 
-              // Spending summary card
-              SliverToBoxAdapter(
-                child: Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 20),
-                  child: _spendingSummary(expenseProvider),
-                ),
-              ),
-
-              // Today's expenses list
-              SliverToBoxAdapter(
-                child: Padding(
-                  padding: const EdgeInsets.fromLTRB(20, 12, 20, 0),
-                  child: expenseProvider.todayExpenses.isEmpty
-                      ? _emptyExpenses(context)
-                      : Column(
-                          children: expenseProvider.todayExpenses
-                              .map(
-                                (e) =>
-                                    _expenseTile(context, e, expenseProvider),
-                              )
-                              .toList(),
+            // Spending section
+            SliverToBoxAdapter(
+              child: Padding(
+                padding: const EdgeInsets.fromLTRB(20, 24, 20, 12),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    const Text(
+                      "Today's Spending",
+                      style: TextStyle(
+                        color: AppTheme.textPrimary,
+                        fontSize: 18,
+                        fontWeight: FontWeight.w800,
+                      ),
+                    ),
+                    GestureDetector(
+                      onTap: () => _showAddExpense(context),
+                      child: Container(
+                        padding: const EdgeInsets.all(6),
+                        decoration: BoxDecoration(
+                          color: AppTheme.accent.withOpacity(0.15),
+                          shape: BoxShape.circle,
                         ),
+                        child: const Icon(
+                          Icons.add,
+                          color: AppTheme.accent,
+                          size: 20,
+                        ),
+                      ),
+                    ),
+                  ],
                 ),
               ),
+            ),
 
-              const SliverToBoxAdapter(child: SizedBox(height: 32)),
-            ],
-          ),
+            // Spending summary card
+            SliverToBoxAdapter(
+              child: Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 20),
+                child: _spendingSummary(expenseProvider),
+              ),
+            ),
+
+            // Today's expenses list
+            SliverToBoxAdapter(
+              child: Padding(
+                padding: const EdgeInsets.fromLTRB(20, 12, 20, 0),
+                child: expenseProvider.todayExpenses.isEmpty
+                    ? _emptyExpenses(context)
+                    : Column(
+                        children: expenseProvider.todayExpenses
+                            .map((e) => _expenseTile(context, e, expenseProvider))
+                            .toList(),
+                      ),
+              ),
+            ),
+
+            const SliverToBoxAdapter(child: SizedBox(height: 32)),
+          ],
         ),
       ),
     );
@@ -224,7 +225,10 @@ class HomeScreen extends StatelessWidget {
           end: Alignment.bottomRight,
         ),
         borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: AppTheme.accent.withOpacity(0.3), width: 1),
+        border: Border.all(
+          color: AppTheme.accent.withOpacity(0.3),
+          width: 1,
+        ),
       ),
       child: Row(
         children: [
@@ -262,13 +266,20 @@ class HomeScreen extends StatelessWidget {
         const SizedBox(height: 2),
         Text(
           label,
-          style: const TextStyle(color: AppTheme.textSecondary, fontSize: 12),
+          style: const TextStyle(
+            color: AppTheme.textSecondary,
+            fontSize: 12,
+          ),
         ),
       ],
     );
   }
 
-  Widget _expenseTile(BuildContext context, expense, ExpenseProvider provider) {
+  Widget _expenseTile(
+    BuildContext context,
+    expense,
+    ExpenseProvider provider,
+  ) {
     final Map<String, String> emojis = {
       'Food': '🍔',
       'Transport': '🚗',
@@ -390,7 +401,10 @@ class HomeScreen extends StatelessWidget {
         decoration: BoxDecoration(
           color: AppTheme.surface,
           borderRadius: BorderRadius.circular(16),
-          border: Border.all(color: AppTheme.accent.withOpacity(0.3), width: 1),
+          border: Border.all(
+            color: AppTheme.accent.withOpacity(0.3),
+            width: 1,
+          ),
         ),
         child: const Center(
           child: Column(
@@ -443,18 +457,8 @@ class HomeScreen extends StatelessWidget {
   String _todayDate() {
     final now = DateTime.now();
     const months = [
-      'Jan',
-      'Feb',
-      'Mar',
-      'Apr',
-      'May',
-      'Jun',
-      'Jul',
-      'Aug',
-      'Sep',
-      'Oct',
-      'Nov',
-      'Dec',
+      'Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun',
+      'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec',
     ];
     return "${months[now.month - 1]} ${now.day}, ${now.year}";
   }

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:firebase_core/firebase_core.dart';
+import 'package:routinex/auth/provider/user_provider.dart';
 import 'package:routinex/auth/screens/auth_wrapper.dart';
 import 'package:routinex/widgets/layout/stats_screen.dart';
 
@@ -17,6 +18,7 @@ void main() async {
       providers: [
         ChangeNotifierProvider(create: (_) => HabitProvider()),
         ChangeNotifierProvider(create: (_) => ExpenseProvider()),
+        ChangeNotifierProvider(create: (_) => UserProvider()),
       ],
       child: const RoutineXApp(),
     ),
