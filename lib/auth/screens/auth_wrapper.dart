@@ -8,8 +8,6 @@ import 'package:routinex/providers/habit_provider.dart';
 import 'phone_auth_screen.dart';
 import 'onboarding_screen.dart';
 
-/// Flow: PhoneAuth → Onboarding (first time) → MainShell
-/// Triggers Firestore data load once the user is fully ready.
 class AuthWrapper extends StatefulWidget {
   const AuthWrapper({super.key});
 
@@ -18,8 +16,6 @@ class AuthWrapper extends StatefulWidget {
 }
 
 class _AuthWrapperState extends State<AuthWrapper> {
-  // Track which UID we've already loaded data for — avoids re-fetching
-  // on spurious rebuilds.
   String? _loadedUid;
 
   Future<void> _loadUserData(BuildContext context) async {
@@ -28,6 +24,7 @@ class _AuthWrapperState extends State<AuthWrapper> {
     _loadedUid = uid;
 
     await Future.wait([
+      context.read<UserProvider>().loadProfile(),
       context.read<HabitProvider>().loadHabits(),
       context.read<ExpenseProvider>().loadExpenses(),
     ]);
@@ -38,45 +35,38 @@ class _AuthWrapperState extends State<AuthWrapper> {
     return StreamBuilder<User?>(
       stream: FirebaseAuth.instance.authStateChanges(),
       builder: (context, snapshot) {
-        // Waiting for Firebase to respond
         if (snapshot.connectionState == ConnectionState.waiting) {
           return _splash();
         }
 
-        // ── Not signed in ──────────────────────────────────────
         if (!snapshot.hasData || snapshot.data == null) {
-          // Clear cached data when the user signs out
           if (_loadedUid != null) {
             _loadedUid = null;
+            context.read<UserProvider>().clear();
             context.read<HabitProvider>().clear();
             context.read<ExpenseProvider>().clear();
           }
           return const PhoneAuthScreen();
         }
 
-        // ── Signed in ──────────────────────────────────────────
         final userProvider = context.watch<UserProvider>();
 
         if (!userProvider.onboardingComplete) {
           return const OnboardingScreen();
         }
 
-        // Load Firestore data (runs once per UID)
         _loadUserData(context);
-
         return const MainShell();
       },
     );
   }
 
-  Widget _splash() {
-    return const Scaffold(
-      backgroundColor: Color(0xFF0F0E17),
-      body: Center(
-        child: CircularProgressIndicator(
-          valueColor: AlwaysStoppedAnimation(Color(0xFF6C63FF)),
+  Widget _splash() => const Scaffold(
+        backgroundColor: Color(0xFF0F0E17),
+        body: Center(
+          child: CircularProgressIndicator(
+            valueColor: AlwaysStoppedAnimation(Color(0xFF6C63FF)),
+          ),
         ),
-      ),
-    );
-  }
+      );
 }

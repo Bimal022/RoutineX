@@ -3,6 +3,7 @@ import 'package:provider/provider.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:routinex/auth/provider/user_provider.dart';
 import 'package:routinex/auth/screens/auth_wrapper.dart';
+import 'package:routinex/auth/screens/profile_screen.dart';
 import 'package:routinex/widgets/layout/stats_screen.dart';
 
 import 'providers/habit_provider.dart';
@@ -52,10 +53,21 @@ class _MainShellState extends State<MainShell> {
   final List<Widget> _screens = const [
     HomeScreen(),
     StatsScreen(),
+    ProfileScreen(),
   ];
 
   @override
   Widget build(BuildContext context) {
+    final user = context.watch<UserProvider>();
+    final animal = user.spiritAnimal.isNotEmpty ? user.spiritAnimal : '';
+
+    // Find the emoji for the current animal for the nav tab
+    const animalEmojis = {
+      'Sloth': '🦥', 'Bee': '🐝', 'Fox': '🦊',
+      'Turtle': '🐢', 'Unicorn': '🦄', 'Octopus': '🐙',
+    };
+    final avatarEmoji = animalEmojis[animal] ?? '👤';
+
     return Scaffold(
       body: IndexedStack(
         index: _currentIndex,
@@ -70,16 +82,21 @@ class _MainShellState extends State<MainShell> {
         child: BottomNavigationBar(
           currentIndex: _currentIndex,
           onTap: (i) => setState(() => _currentIndex = i),
-          items: const [
-            BottomNavigationBarItem(
+          items: [
+            const BottomNavigationBarItem(
               icon: Icon(Icons.home_outlined),
               activeIcon: Icon(Icons.home_rounded),
               label: 'Home',
             ),
-            BottomNavigationBarItem(
+            const BottomNavigationBarItem(
               icon: Icon(Icons.bar_chart_outlined),
               activeIcon: Icon(Icons.bar_chart_rounded),
               label: 'Stats',
+            ),
+            BottomNavigationBarItem(
+              icon: Text(avatarEmoji,
+                  style: const TextStyle(fontSize: 20)),
+              label: 'Profile',
             ),
           ],
         ),
