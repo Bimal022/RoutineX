@@ -62,7 +62,9 @@ class _OnboardingScreenState extends State<OnboardingScreen>
   void dispose() {
     _pageController.dispose();
     _nameController.dispose();
-    for (final c in _animControllers) c.dispose();
+    for (final c in _animControllers) {
+      c.dispose();
+    }
     super.dispose();
   }
 

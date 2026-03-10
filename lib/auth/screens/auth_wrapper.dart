@@ -17,10 +17,12 @@ class AuthWrapper extends StatefulWidget {
 
 class _AuthWrapperState extends State<AuthWrapper> {
   String? _loadedUid;
+  bool _loadingProfile = true;
 
   Future<void> _loadUserData(BuildContext context) async {
     final uid = FirebaseAuth.instance.currentUser?.uid;
     if (uid == null || uid == _loadedUid) return;
+
     _loadedUid = uid;
 
     await Future.wait([
@@ -28,6 +30,10 @@ class _AuthWrapperState extends State<AuthWrapper> {
       context.read<HabitProvider>().loadHabits(),
       context.read<ExpenseProvider>().loadExpenses(),
     ]);
+
+    setState(() {
+      _loadingProfile = false;
+    });
   }
 
   @override
@@ -39,14 +45,14 @@ class _AuthWrapperState extends State<AuthWrapper> {
           return _splash();
         }
 
-        if (!snapshot.hasData || snapshot.data == null) {
-          if (_loadedUid != null) {
-            _loadedUid = null;
-            context.read<UserProvider>().clear();
-            context.read<HabitProvider>().clear();
-            context.read<ExpenseProvider>().clear();
-          }
+        if (!snapshot.hasData) {
           return const PhoneAuthScreen();
+        }
+
+        _loadUserData(context);
+
+        if (_loadingProfile) {
+          return _splash();
         }
 
         final userProvider = context.watch<UserProvider>();
@@ -55,18 +61,16 @@ class _AuthWrapperState extends State<AuthWrapper> {
           return const OnboardingScreen();
         }
 
-        _loadUserData(context);
         return const MainShell();
       },
     );
   }
-
   Widget _splash() => const Scaffold(
-        backgroundColor: Color(0xFF0F0E17),
-        body: Center(
-          child: CircularProgressIndicator(
-            valueColor: AlwaysStoppedAnimation(Color(0xFF6C63FF)),
-          ),
-        ),
-      );
+    backgroundColor: Color(0xFF0F0E17),
+    body: Center(
+      child: CircularProgressIndicator(
+        valueColor: AlwaysStoppedAnimation(Color(0xFF6C63FF)),
+      ),
+    ),
+  );
 }

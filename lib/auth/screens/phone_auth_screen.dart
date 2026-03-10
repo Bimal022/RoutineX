@@ -64,8 +64,12 @@ class _PhoneAuthScreenState extends State<PhoneAuthScreen>
     _animController.dispose();
     _phoneController.dispose();
     _phoneFocusNode.dispose();
-    for (final c in _otpControllers) c.dispose();
-    for (final f in _otpFocusNodes) f.dispose();
+    for (final c in _otpControllers) {
+      c.dispose();
+    }
+    for (final f in _otpFocusNodes) {
+      f.dispose();
+    }
     super.dispose();
   }
 
@@ -375,7 +379,9 @@ class _PhoneAuthScreenState extends State<PhoneAuthScreen>
                 setState(() {
                   _otpSent = false;
                   _errorMessage = null;
-                  for (final c in _otpControllers) c.clear();
+                  for (final c in _otpControllers) {
+                    c.clear();
+                  }
                 });
                 _animController.reset();
                 _animController.forward();
