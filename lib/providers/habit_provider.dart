@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:routinex/services/notification_service.dart';
 import '../models/habit.dart';
 import '../models/habit_log.dart';
 
@@ -15,16 +16,13 @@ class HabitProvider extends ChangeNotifier {
   String get _uid => FirebaseAuth.instance.currentUser!.uid;
 
   /// Root reference: users/{uid}
-  DocumentReference get _userDoc =>
-      _firestore.collection('users').doc(_uid);
+  DocumentReference get _userDoc => _firestore.collection('users').doc(_uid);
 
   /// users/{uid}/habits
-  CollectionReference get _habitsCol =>
-      _userDoc.collection('habits');
+  CollectionReference get _habitsCol => _userDoc.collection('habits');
 
   /// users/{uid}/habit_logs
-  CollectionReference get _logsCol =>
-      _userDoc.collection('habit_logs');
+  CollectionReference get _logsCol => _userDoc.collection('habit_logs');
 
   // ── Getters ───────────────────────────────────────────────────
   List<Habit> get habits => _habits;
@@ -58,26 +56,24 @@ class HabitProvider extends ChangeNotifier {
   Future<void> _loadTodayLogs() async {
     final today = DateTime.now();
     // Firestore date range for today
-    final startOfDay =
-        DateTime(today.year, today.month, today.day);
-    final endOfDay =
-        DateTime(today.year, today.month, today.day, 23, 59, 59);
+    final startOfDay = DateTime(today.year, today.month, today.day);
+    final endOfDay = DateTime(today.year, today.month, today.day, 23, 59, 59);
 
     final logsSnap = await _logsCol
-        .where('date',
-            isGreaterThanOrEqualTo: startOfDay.toIso8601String())
-        .where('date',
-            isLessThanOrEqualTo: endOfDay.toIso8601String())
+        .where('date', isGreaterThanOrEqualTo: startOfDay.toIso8601String())
+        .where('date', isLessThanOrEqualTo: endOfDay.toIso8601String())
         .get();
 
     _logs.clear();
     for (final doc in logsSnap.docs) {
       final data = doc.data() as Map<String, dynamic>;
-      _logs.add(HabitLog(
-        habitId: data['habitId'] as String,
-        date: DateTime.parse(data['date'] as String),
-        completed: data['completed'] as bool,
-      ));
+      _logs.add(
+        HabitLog(
+          habitId: data['habitId'] as String,
+          date: DateTime.parse(data['date'] as String),
+          completed: data['completed'] as bool,
+        ),
+      );
     }
   }
 
@@ -87,28 +83,44 @@ class HabitProvider extends ChangeNotifier {
     String emoji, {
     HabitType type = HabitType.recurring,
     List<int> weekdays = const [],
+    int? hour,
+    int? minute,
   }) async {
     try {
       final id = DateTime.now().millisecondsSinceEpoch.toString();
+
       final habit = Habit(
         id: id,
         name: name,
         emoji: emoji,
         type: type,
         weekdays: weekdays,
+        hour: hour,
+        minute: minute,
       );
 
       _habits.add(habit);
-      notifyListeners(); // optimistic update
+      notifyListeners();
 
       await _habitsCol.doc(id).set({
         'id': id,
         'name': name,
         'emoji': emoji,
-        'type': type.name,          // 'recurring' | 'oneTime'
+        'type': type.name,
         'weekdays': weekdays,
+        'hour': hour,
+        'minute': minute,
         'createdAt': FieldValue.serverTimestamp(),
       });
+
+      if (hour != null && minute != null) {
+        await NotificationService.scheduleHabitNotification(
+          habitId: id,
+          habitName: name,
+          hour: hour,
+          minute: minute,
+        );
+      }
     } catch (e) {
       debugPrint('HabitProvider.addHabit error: $e');
     }
@@ -118,19 +130,22 @@ class HabitProvider extends ChangeNotifier {
   Future<void> removeHabit(String habitId) async {
     _habits.removeWhere((h) => h.id == habitId);
     _logs.removeWhere((l) => l.habitId == habitId);
-    notifyListeners(); // optimistic update
+
+    notifyListeners();
 
     try {
+      await NotificationService.cancelHabitNotification(habitId);
+
       await _habitsCol.doc(habitId).delete();
 
-      // Also delete all logs for this habit
-      final logDocs = await _logsCol
-          .where('habitId', isEqualTo: habitId)
-          .get();
+      final logDocs = await _logsCol.where('habitId', isEqualTo: habitId).get();
+
       final batch = _firestore.batch();
+
       for (final doc in logDocs.docs) {
         batch.delete(doc.reference);
       }
+
       await batch.commit();
     } catch (e) {
       debugPrint('HabitProvider.removeHabit error: $e');
@@ -215,8 +230,9 @@ class HabitProvider extends ChangeNotifier {
     int streak = 0;
     DateTime day = DateTime.now();
     for (int i = 0; i < 365; i++) {
-      final scheduledOnDay =
-          _habits.where((h) => h.isScheduledFor(day)).toList();
+      final scheduledOnDay = _habits
+          .where((h) => h.isScheduledFor(day))
+          .toList();
       if (scheduledOnDay.isEmpty) {
         day = day.subtract(const Duration(days: 1));
         continue;
@@ -251,9 +267,7 @@ class HabitProvider extends ChangeNotifier {
   // ── Private helpers ───────────────────────────────────────────
   Habit _habitFromMap(Map<String, dynamic> data) {
     final typeStr = data['type'] as String? ?? 'recurring';
-    final type = typeStr == 'oneTime'
-        ? HabitType.oneTime
-        : HabitType.recurring;
+    final type = typeStr == 'oneTime' ? HabitType.oneTime : HabitType.recurring;
 
     return Habit(
       id: data['id'] as String,

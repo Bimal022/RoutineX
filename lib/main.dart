@@ -4,16 +4,30 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:routinex/auth/provider/user_provider.dart';
 import 'package:routinex/auth/screens/auth_wrapper.dart';
 import 'package:routinex/auth/screens/profile_screen.dart';
+import 'package:routinex/services/notification_service.dart';
 import 'package:routinex/widgets/layout/stats_screen.dart';
-
+import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'providers/habit_provider.dart';
 import 'providers/expense_provider.dart';
 import 'screens/home_screen.dart';
 import 'theme.dart';
 
+void init() async {
+  final FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin =
+      FlutterLocalNotificationsPlugin();
+
+  await flutterLocalNotificationsPlugin
+      .resolvePlatformSpecificImplementation<
+        AndroidFlutterLocalNotificationsPlugin
+      >()
+      ?.requestNotificationsPermission();
+}
+
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp();
+  await NotificationService.init();
+
   runApp(
     MultiProvider(
       providers: [
@@ -63,16 +77,17 @@ class _MainShellState extends State<MainShell> {
 
     // Find the emoji for the current animal for the nav tab
     const animalEmojis = {
-      'Sloth': '🦥', 'Bee': '🐝', 'Fox': '🦊',
-      'Turtle': '🐢', 'Unicorn': '🦄', 'Octopus': '🐙',
+      'Sloth': '🦥',
+      'Bee': '🐝',
+      'Fox': '🦊',
+      'Turtle': '🐢',
+      'Unicorn': '🦄',
+      'Octopus': '🐙',
     };
     final avatarEmoji = animalEmojis[animal] ?? '👤';
 
     return Scaffold(
-      body: IndexedStack(
-        index: _currentIndex,
-        children: _screens,
-      ),
+      body: IndexedStack(index: _currentIndex, children: _screens),
       bottomNavigationBar: Container(
         decoration: const BoxDecoration(
           border: Border(
@@ -94,8 +109,7 @@ class _MainShellState extends State<MainShell> {
               label: 'Stats',
             ),
             BottomNavigationBarItem(
-              icon: Text(avatarEmoji,
-                  style: const TextStyle(fontSize: 20)),
+              icon: Text(avatarEmoji, style: const TextStyle(fontSize: 20)),
               label: 'Profile',
             ),
           ],
