@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -83,6 +85,7 @@ class HabitProvider extends ChangeNotifier {
     String emoji, {
     HabitType type = HabitType.recurring,
     List<int> weekdays = const [],
+    bool allDay = false,
     int? hour,
     int? minute,
   }) async {
@@ -97,6 +100,7 @@ class HabitProvider extends ChangeNotifier {
         weekdays: weekdays,
         hour: hour,
         minute: minute,
+        allDay: allDay,
       );
 
       _habits.add(habit);
@@ -108,15 +112,18 @@ class HabitProvider extends ChangeNotifier {
         'emoji': emoji,
         'type': type.name,
         'weekdays': weekdays,
+        'allDay': allDay,
         'hour': hour,
         'minute': minute,
         'createdAt': FieldValue.serverTimestamp(),
       });
+      log('NotiTest Habit set at hour $hour and minute $minute');
 
       if (hour != null && minute != null) {
         await NotificationService.scheduleHabitNotification(
           habitId: id,
           habitName: name,
+          allDay: allDay,
           hour: hour,
           minute: minute,
         );
@@ -275,6 +282,9 @@ class HabitProvider extends ChangeNotifier {
       emoji: data['emoji'] as String? ?? '✅',
       type: type,
       weekdays: List<int>.from(data['weekdays'] ?? []),
+      allDay: data['allDay'] as bool? ?? false,
+      hour: data['hour'] as int?,
+      minute: data['minute'] as int?,
     );
   }
 }

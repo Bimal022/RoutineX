@@ -10,6 +10,7 @@ class Habit {
   /// For recurring habits: list of weekdays (1=Mon … 7=Sun).
   /// Empty list means every day.
   final List<int> weekdays;
+  final bool allDay;
   final int? hour;
   final int? minute;
 
@@ -20,6 +21,7 @@ class Habit {
     DateTime? createdAt,
     this.type = HabitType.recurring,
     this.weekdays = const [],
+    this.allDay = false,
     this.hour,
     this.minute,
   }) : createdAt = createdAt ?? DateTime.now();

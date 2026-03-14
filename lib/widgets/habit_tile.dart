@@ -35,9 +35,7 @@ class HabitTile extends StatelessWidget {
           margin: const EdgeInsets.only(bottom: 10),
           padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
           decoration: BoxDecoration(
-            color: done
-                ? AppTheme.primary.withOpacity(0.12)
-                : AppTheme.surface,
+            color: done ? AppTheme.primary.withOpacity(0.12) : AppTheme.surface,
             borderRadius: BorderRadius.circular(16),
             border: Border.all(
               color: done
@@ -62,8 +60,7 @@ class HabitTile extends StatelessWidget {
                             : AppTheme.textPrimary,
                         fontSize: 15,
                         fontWeight: FontWeight.w600,
-                        decoration:
-                            done ? TextDecoration.lineThrough : null,
+                        decoration: done ? TextDecoration.lineThrough : null,
                       ),
                     ),
                     const SizedBox(height: 3),
@@ -77,19 +74,15 @@ class HabitTile extends StatelessWidget {
                 width: 28,
                 height: 28,
                 decoration: BoxDecoration(
-                  color:
-                      done ? AppTheme.primary : Colors.transparent,
+                  color: done ? AppTheme.primary : Colors.transparent,
                   shape: BoxShape.circle,
                   border: Border.all(
-                    color: done
-                        ? AppTheme.primary
-                        : AppTheme.textSecondary,
+                    color: done ? AppTheme.primary : AppTheme.textSecondary,
                     width: 2,
                   ),
                 ),
                 child: done
-                    ? const Icon(Icons.check,
-                        size: 16, color: Colors.white)
+                    ? const Icon(Icons.check, size: 16, color: Colors.white)
                     : null,
               ),
             ],
@@ -100,24 +93,38 @@ class HabitTile extends StatelessWidget {
   }
 
   Widget _scheduleBadge(bool isOneTime) {
+    String scheduleText;
+
     if (isOneTime) {
-      return _badge("One-time", AppTheme.accent, Icons.looks_one_outlined);
+      scheduleText = "One-time";
+    } else if (habit.weekdays.isEmpty) {
+      scheduleText = "Every day";
+    } else {
+      const dayNames = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
+      final sorted = habit.weekdays.toList()..sort();
+      scheduleText = sorted.map((d) => dayNames[d - 1]).join(' · ');
     }
-    if (habit.weekdays.isEmpty) {
-      return _badge("Every day", AppTheme.secondary, Icons.repeat_rounded);
+
+    // Add time if available
+    if (habit.hour != null && habit.minute != null) {
+      final h = habit.hour!.toString().padLeft(2, '0');
+      final m = habit.minute!.toString().padLeft(2, '0');
+      scheduleText = "$scheduleText · $h:$m";
     }
-    const dayNames = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
-    final sorted = habit.weekdays.toList()..sort();
-    final label = sorted.map((d) => dayNames[d - 1]).join(' · ');
-    return _badge(label, AppTheme.primary, Icons.repeat_rounded);
+
+    return _badge(
+      scheduleText,
+      isOneTime ? AppTheme.accent : AppTheme.primary,
+      isOneTime ? Icons.looks_one_outlined : Icons.schedule,
+    );
   }
 
   Widget _badge(String label, Color color, IconData icon) {
     return Row(
       mainAxisSize: MainAxisSize.min,
       children: [
-        Icon(icon, size: 11, color: color.withOpacity(0.8)),
-        const SizedBox(width: 3),
+        Icon(icon, size: 12, color: color.withOpacity(0.8)),
+        const SizedBox(width: 4),
         Text(
           label,
           style: TextStyle(
