@@ -107,6 +107,7 @@ class _OnboardingScreenState extends State<OnboardingScreen>
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      resizeToAvoidBottomInset: true,
       backgroundColor: AppTheme.bg,
       body: SafeArea(
         child: Column(
@@ -203,10 +204,11 @@ class _OnboardingScreenState extends State<OnboardingScreen>
 
   // ── Page 1: Name ──────────────────────────────────────────────
   Widget _buildNamePage() {
-    return FadeTransition(
-      opacity: _fadeAnims[1],
-      child: SlideTransition(
-        position: _slideAnims[1],
+  return FadeTransition(
+    opacity: _fadeAnims[1],
+    child: SlideTransition(
+      position: _slideAnims[1],
+      child: SingleChildScrollView(
         child: Padding(
           padding: const EdgeInsets.symmetric(horizontal: 28),
           child: Column(
@@ -237,7 +239,6 @@ class _OnboardingScreenState extends State<OnboardingScreen>
               const SizedBox(height: 40),
               TextField(
                 controller: _nameController,
-                autofocus: false,
                 textCapitalization: TextCapitalization.words,
                 style: const TextStyle(
                   color: AppTheme.textPrimary,
@@ -263,17 +264,19 @@ class _OnboardingScreenState extends State<OnboardingScreen>
                     borderSide: const BorderSide(
                         color: AppTheme.primary, width: 2),
                   ),
-                  contentPadding: const EdgeInsets.symmetric(
-                      horizontal: 20, vertical: 20),
+                  contentPadding:
+                      const EdgeInsets.symmetric(horizontal: 20, vertical: 20),
                 ),
                 onSubmitted: (_) => _nextPage(),
               ),
+              const SizedBox(height: 40),
             ],
           ),
         ),
       ),
-    );
-  }
+    ),
+  );
+}
 
   // ── Page 2: Funny question ────────────────────────────────────
   Widget _buildFunnyPage() {
