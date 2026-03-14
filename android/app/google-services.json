@@ -12,7 +12,20 @@
           "package_name": "com.bimal.routinex"
         }
       },
-      "oauth_client": [],
+      "oauth_client": [
+        {
+          "client_id": "609971100444-lkrf2d7hjdis8fgnn9ttntcknbl539hb.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.bimal.routinex",
+            "certificate_hash": "7c571aa159e7e23edee28f0f0164dc55014389a4"
+          }
+        },
+        {
+          "client_id": "609971100444-v75c7rt4o732j3f80gliht3s684vngjs.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
       "api_key": [
         {
           "current_key": "AIzaSyAozmZowy4OmsnZjXKnQASHuc62xhPz4YI"
@@ -20,7 +33,19 @@
       ],
       "services": {
         "appinvite_service": {
-          "other_platform_oauth_client": []
+          "other_platform_oauth_client": [
+            {
+              "client_id": "609971100444-v75c7rt4o732j3f80gliht3s684vngjs.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "609971100444-tmikt9jmh2o1hc81ulhsefsu0954c8d9.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.example.routinex"
+              }
+            }
+          ]
         }
       }
     }

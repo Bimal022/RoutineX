@@ -5,7 +5,7 @@ import 'package:routinex/auth/provider/user_provider.dart';
 import 'package:routinex/main.dart';
 import 'package:routinex/providers/expense_provider.dart';
 import 'package:routinex/providers/habit_provider.dart';
-import 'phone_auth_screen.dart';
+import 'auth_screen.dart';
 import 'onboarding_screen.dart';
 
 class AuthWrapper extends StatefulWidget {
@@ -46,7 +46,7 @@ class _AuthWrapperState extends State<AuthWrapper> {
         }
 
         if (!snapshot.hasData) {
-          return const PhoneAuthScreen();
+          return const AuthScreen();
         }
 
         _loadUserData(context);
@@ -65,6 +65,7 @@ class _AuthWrapperState extends State<AuthWrapper> {
       },
     );
   }
+
   Widget _splash() => const Scaffold(
     backgroundColor: Color(0xFF0F0E17),
     body: Center(

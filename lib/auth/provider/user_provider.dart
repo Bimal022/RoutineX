@@ -18,22 +18,22 @@ class UserProvider extends ChangeNotifier {
     return _name.trim().split(' ').first;
   }
 
-  String? get phoneNumber =>
-      FirebaseAuth.instance.currentUser?.phoneNumber;
+  // ── Google account fields ─────────────────────────────────────
+  String? get email => FirebaseAuth.instance.currentUser?.email;
+
+  String? get photoUrl => FirebaseAuth.instance.currentUser?.photoURL;
 
   // ── Load from Firestore ───────────────────────────────────────
   Future<void> loadProfile() async {
     final uid = FirebaseAuth.instance.currentUser?.uid;
     if (uid == null) return;
     try {
-      final doc =
-          await _firestore.collection('users').doc(uid).get();
+      final doc = await _firestore.collection('users').doc(uid).get();
       if (doc.exists) {
         final data = doc.data()!;
         _name = data['name'] as String? ?? '';
         _spiritAnimal = data['spiritAnimal'] as String? ?? '';
-        _onboardingComplete =
-            data['onboardingComplete'] as bool? ?? false;
+        _onboardingComplete = data['onboardingComplete'] as bool? ?? false;
         notifyListeners();
       }
     } catch (e) {
@@ -41,7 +41,7 @@ class UserProvider extends ChangeNotifier {
     }
   }
 
-  // ── Setters (persist to Firestore) ────────────────────────────
+  // ── Setters ───────────────────────────────────────────────────
   void setName(String name) {
     _name = name.trim();
     notifyListeners();
@@ -56,14 +56,15 @@ class UserProvider extends ChangeNotifier {
     _onboardingComplete = true;
     notifyListeners();
 
-    final uid = FirebaseAuth.instance.currentUser?.uid;
-    if (uid == null) return;
+    final user = FirebaseAuth.instance.currentUser;
+    if (user == null) return;
     try {
-      await _firestore.collection('users').doc(uid).set({
+      await _firestore.collection('users').doc(user.uid).set({
         'name': _name,
         'spiritAnimal': _spiritAnimal,
         'onboardingComplete': true,
-        'phone': phoneNumber ?? '',
+        'email': user.email ?? '',
+        'photoUrl': user.photoURL ?? '',
         'createdAt': FieldValue.serverTimestamp(),
       }, SetOptions(merge: true));
     } catch (e) {
@@ -76,10 +77,7 @@ class UserProvider extends ChangeNotifier {
     notifyListeners();
     final uid = FirebaseAuth.instance.currentUser?.uid;
     if (uid == null) return;
-    await _firestore
-        .collection('users')
-        .doc(uid)
-        .update({'name': _name});
+    await _firestore.collection('users').doc(uid).update({'name': _name});
   }
 
   // ── Clear on sign-out ─────────────────────────────────────────

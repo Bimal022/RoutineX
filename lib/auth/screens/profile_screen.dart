@@ -26,43 +26,51 @@ class _Animal {
 
 const _animals = [
   _Animal(
-    emoji: '🦥', label: 'Sloth',
+    emoji: '🦥',
+    label: 'Sloth',
     desc: 'starts at noon, naps at 1',
-    color: Color(0xFFB39DDB), bg: Color(0xFF2D2040),
+    color: Color(0xFFB39DDB),
+    bg: Color(0xFF2D2040),
   ),
   _Animal(
-    emoji: '🐝', label: 'Bee',
+    emoji: '🐝',
+    label: 'Bee',
     desc: 'up at 5am, spreadsheets by 6',
-    color: Color(0xFFFFD54F), bg: Color(0xFF2D2700),
+    color: Color(0xFFFFD54F),
+    bg: Color(0xFF2D2700),
   ),
   _Animal(
-    emoji: '🦊', label: 'Fox',
+    emoji: '🦊',
+    label: 'Fox',
     desc: 'chaotic but always wins somehow',
-    color: Color(0xFFFF8A65), bg: Color(0xFF2D1500),
+    color: Color(0xFFFF8A65),
+    bg: Color(0xFF2D1500),
   ),
   _Animal(
-    emoji: '🐢', label: 'Turtle',
+    emoji: '🐢',
+    label: 'Turtle',
     desc: 'slow and steady, never skips leg day',
-    color: Color(0xFF81C784), bg: Color(0xFF0D2010),
+    color: Color(0xFF81C784),
+    bg: Color(0xFF0D2010),
   ),
   _Animal(
-    emoji: '🦄', label: 'Unicorn',
+    emoji: '🦄',
+    label: 'Unicorn',
     desc: 'perfect habits, suspicious energy',
-    color: Color(0xFFF48FB1), bg: Color(0xFF2D0A1A),
+    color: Color(0xFFF48FB1),
+    bg: Color(0xFF2D0A1A),
   ),
   _Animal(
-    emoji: '🐙', label: 'Octopus',
+    emoji: '🐙',
+    label: 'Octopus',
     desc: 'eight tasks open, zero finished',
-    color: Color(0xFF4DD0E1), bg: Color(0xFF001F26),
+    color: Color(0xFF4DD0E1),
+    bg: Color(0xFF001F26),
   ),
 ];
 
 _Animal _animalFor(String label) =>
-    _animals.firstWhere(
-      (a) => a.label == label,
-      orElse: () => _animals[0],
-    );
-
+    _animals.firstWhere((a) => a.label == label, orElse: () => _animals[0]);
 
 // ────────────────────────────────────────────────────────────────
 class ProfileScreen extends StatefulWidget {
@@ -85,8 +93,7 @@ class _ProfileScreenState extends State<ProfileScreen>
       vsync: this,
       duration: const Duration(milliseconds: 500),
     )..forward();
-    _fadeAnim =
-        CurvedAnimation(parent: _animCtrl, curve: Curves.easeOut);
+    _fadeAnim = CurvedAnimation(parent: _animCtrl, curve: Curves.easeOut);
     _slideAnim = Tween<Offset>(
       begin: const Offset(0, 0.06),
       end: Offset.zero,
@@ -105,27 +112,32 @@ class _ProfileScreenState extends State<ProfileScreen>
       context: context,
       builder: (_) => AlertDialog(
         backgroundColor: AppTheme.surface,
-        shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(20)),
-        title: const Text('Sign out?',
-            style: TextStyle(
-                color: AppTheme.textPrimary,
-                fontWeight: FontWeight.w800)),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+        title: const Text(
+          'Sign out?',
+          style: TextStyle(
+            color: AppTheme.textPrimary,
+            fontWeight: FontWeight.w800,
+          ),
+        ),
         content: const Text(
-          "You will need to verify your phone number again to sign back in."
-          ,style: TextStyle(color: AppTheme.textSecondary),
+          'You will need to sign in with Google again to continue.',
+          style: TextStyle(color: AppTheme.textSecondary),
         ),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context, false),
-            child: const Text('Cancel',
-                style: TextStyle(color: AppTheme.textSecondary)),
+            child: const Text(
+              'Cancel',
+              style: TextStyle(color: AppTheme.textSecondary),
+            ),
           ),
           TextButton(
             onPressed: () => Navigator.pop(context, true),
-            child: const Text('Sign out',
-                style: TextStyle(
-                    color: Colors.red, fontWeight: FontWeight.w700)),
+            child: const Text(
+              'Sign out',
+              style: TextStyle(color: Colors.red, fontWeight: FontWeight.w700),
+            ),
           ),
         ],
       ),
@@ -137,7 +149,7 @@ class _ProfileScreenState extends State<ProfileScreen>
     context.read<HabitProvider>().clear();
     context.read<ExpenseProvider>().clear();
     await FirebaseAuth.instance.signOut();
-    // AuthWrapper will detect the sign-out and show PhoneAuthScreen
+    // AuthWrapper will detect the sign-out and show AuthScreen
   }
 
   // ── Edit name ────────────────────────────────────────────────
@@ -149,13 +161,13 @@ class _ProfileScreenState extends State<ProfileScreen>
       backgroundColor: Colors.transparent,
       builder: (_) => Padding(
         padding: EdgeInsets.only(
-            bottom: MediaQuery.of(context).viewInsets.bottom),
+          bottom: MediaQuery.of(context).viewInsets.bottom,
+        ),
         child: Container(
           padding: const EdgeInsets.all(24),
           decoration: const BoxDecoration(
             color: AppTheme.surface,
-            borderRadius:
-                BorderRadius.vertical(top: Radius.circular(24)),
+            borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
           ),
           child: Column(
             mainAxisSize: MainAxisSize.min,
@@ -163,7 +175,8 @@ class _ProfileScreenState extends State<ProfileScreen>
             children: [
               Center(
                 child: Container(
-                  width: 40, height: 4,
+                  width: 40,
+                  height: 4,
                   decoration: BoxDecoration(
                     color: AppTheme.surfaceLight,
                     borderRadius: BorderRadius.circular(2),
@@ -171,18 +184,23 @@ class _ProfileScreenState extends State<ProfileScreen>
                 ),
               ),
               const SizedBox(height: 20),
-              const Text('Edit name',
-                  style: TextStyle(
-                      color: AppTheme.textPrimary,
-                      fontSize: 20,
-                      fontWeight: FontWeight.w800)),
+              const Text(
+                'Edit name',
+                style: TextStyle(
+                  color: AppTheme.textPrimary,
+                  fontSize: 20,
+                  fontWeight: FontWeight.w800,
+                ),
+              ),
               const SizedBox(height: 16),
               TextField(
                 controller: ctrl,
                 autofocus: true,
                 textCapitalization: TextCapitalization.words,
                 style: const TextStyle(
-                    color: AppTheme.textPrimary, fontSize: 17),
+                  color: AppTheme.textPrimary,
+                  fontSize: 17,
+                ),
                 decoration: InputDecoration(
                   hintText: 'Your name',
                   filled: true,
@@ -194,10 +212,14 @@ class _ProfileScreenState extends State<ProfileScreen>
                   focusedBorder: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(14),
                     borderSide: const BorderSide(
-                        color: AppTheme.primary, width: 2),
+                      color: AppTheme.primary,
+                      width: 2,
+                    ),
                   ),
                   contentPadding: const EdgeInsets.symmetric(
-                      horizontal: 16, vertical: 16),
+                    horizontal: 16,
+                    vertical: 16,
+                  ),
                 ),
               ),
               const SizedBox(height: 16),
@@ -209,8 +231,10 @@ class _ProfileScreenState extends State<ProfileScreen>
                     if (v.isNotEmpty) user.updateName(v);
                     Navigator.pop(context);
                   },
-                  child: const Text('Save',
-                      style: TextStyle(fontWeight: FontWeight.w700)),
+                  child: const Text(
+                    'Save',
+                    style: TextStyle(fontWeight: FontWeight.w700),
+                  ),
                 ),
               ),
             ],
@@ -229,6 +253,7 @@ class _ProfileScreenState extends State<ProfileScreen>
       builder: (_) => _AnimalPickerSheet(currentAnimal: user.spiritAnimal),
     );
   }
+
   // ── BUILD ────────────────────────────────────────────────────
   @override
   Widget build(BuildContext context) {
@@ -245,38 +270,26 @@ class _ProfileScreenState extends State<ProfileScreen>
           position: _slideAnim,
           child: CustomScrollView(
             slivers: [
-              // ── Hero header ──────────────────────────────────
-              SliverToBoxAdapter(
-                child: _buildHero(context, user, animal),
-              ),
-
-              // ── Stats row ────────────────────────────────────
+              SliverToBoxAdapter(child: _buildHero(context, user, animal)),
               SliverToBoxAdapter(
                 child: Padding(
                   padding: const EdgeInsets.fromLTRB(20, 0, 20, 20),
                   child: _buildStatsRow(habits, expenses),
                 ),
               ),
-
-              // ── Spirit animal card ───────────────────────────
               SliverToBoxAdapter(
                 child: Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 20),
                   child: _buildAnimalCard(context, user, animal),
                 ),
               ),
-
               const SliverToBoxAdapter(child: SizedBox(height: 20)),
-
-              // ── Menu items ───────────────────────────────────
               SliverToBoxAdapter(
                 child: Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 20),
                   child: _buildMenu(context, user),
                 ),
               ),
-
-              // ── Sign out ─────────────────────────────────────
               SliverToBoxAdapter(
                 child: Padding(
                   padding: const EdgeInsets.fromLTRB(20, 20, 20, 40),
@@ -291,24 +304,20 @@ class _ProfileScreenState extends State<ProfileScreen>
   }
 
   // ── Hero section ─────────────────────────────────────────────
-  Widget _buildHero(
-      BuildContext context, UserProvider user, _Animal animal) {
+  Widget _buildHero(BuildContext context, UserProvider user, _Animal animal) {
     return Container(
       width: double.infinity,
       padding: const EdgeInsets.fromLTRB(20, 60, 20, 28),
       decoration: BoxDecoration(
         gradient: LinearGradient(
-          colors: [
-            animal.color.withOpacity(0.2),
-            AppTheme.bg,
-          ],
+          colors: [animal.color.withOpacity(0.2), AppTheme.bg],
           begin: Alignment.topCenter,
           end: Alignment.bottomCenter,
         ),
       ),
       child: Column(
         children: [
-          // Avatar
+          // Avatar — shows Google profile photo if available, else spirit animal
           Stack(
             alignment: Alignment.bottomRight,
             children: [
@@ -322,7 +331,9 @@ class _ProfileScreenState extends State<ProfileScreen>
                     color: animal.bg,
                     shape: BoxShape.circle,
                     border: Border.all(
-                        color: animal.color.withOpacity(0.6), width: 3),
+                      color: animal.color.withOpacity(0.6),
+                      width: 3,
+                    ),
                     boxShadow: [
                       BoxShadow(
                         color: animal.color.withOpacity(0.3),
@@ -331,9 +342,24 @@ class _ProfileScreenState extends State<ProfileScreen>
                       ),
                     ],
                   ),
-                  child: Center(
-                    child: Text(animal.emoji,
-                        style: const TextStyle(fontSize: 52)),
+                  child: ClipOval(
+                    child: user.photoUrl != null
+                        ? Image.network(
+                            user.photoUrl!,
+                            fit: BoxFit.cover,
+                            errorBuilder: (_, __, ___) => Center(
+                              child: Text(
+                                animal.emoji,
+                                style: const TextStyle(fontSize: 52),
+                              ),
+                            ),
+                          )
+                        : Center(
+                            child: Text(
+                              animal.emoji,
+                              style: const TextStyle(fontSize: 52),
+                            ),
+                          ),
                   ),
                 ),
               ),
@@ -346,11 +372,13 @@ class _ProfileScreenState extends State<ProfileScreen>
                   decoration: BoxDecoration(
                     color: animal.color,
                     shape: BoxShape.circle,
-                    border: Border.all(
-                        color: AppTheme.bg, width: 2),
+                    border: Border.all(color: AppTheme.bg, width: 2),
                   ),
-                  child: const Icon(Icons.edit_rounded,
-                      size: 14, color: Colors.black87),
+                  child: const Icon(
+                    Icons.edit_rounded,
+                    size: 14,
+                    color: Colors.black87,
+                  ),
                 ),
               ),
             ],
@@ -373,31 +401,34 @@ class _ProfileScreenState extends State<ProfileScreen>
                   ),
                 ),
                 const SizedBox(width: 6),
-                const Icon(Icons.edit_outlined,
-                    size: 16, color: AppTheme.textSecondary),
+                const Icon(
+                  Icons.edit_outlined,
+                  size: 16,
+                  color: AppTheme.textSecondary,
+                ),
               ],
             ),
           ),
           const SizedBox(height: 4),
 
-          // Phone
-          if (user.phoneNumber != null)
+          // Email (replaces phone number)
+          if (user.email != null)
             Text(
-              user.phoneNumber!,
+              user.email!,
               style: const TextStyle(
-                  color: AppTheme.textSecondary, fontSize: 14),
+                color: AppTheme.textSecondary,
+                fontSize: 14,
+              ),
             ),
           const SizedBox(height: 8),
 
           // Spirit animal tag
           Container(
-            padding:
-                const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
             decoration: BoxDecoration(
               color: animal.color.withOpacity(0.15),
               borderRadius: BorderRadius.circular(20),
-              border: Border.all(
-                  color: animal.color.withOpacity(0.4)),
+              border: Border.all(color: animal.color.withOpacity(0.4)),
             ),
             child: Text(
               '${animal.emoji}  Spirit animal: ${animal.label}',
@@ -418,34 +449,36 @@ class _ProfileScreenState extends State<ProfileScreen>
     return Row(
       children: [
         Expanded(
-            child: _statCard(
-          '${habits.todaysHabits.length}',
-          'Habits',
-          '📋',
-          AppTheme.primary,
-        )),
+          child: _statCard(
+            '${habits.todaysHabits.length}',
+            'Habits',
+            '📋',
+            AppTheme.primary,
+          ),
+        ),
         const SizedBox(width: 12),
         Expanded(
-            child: _statCard(
-          '${habits.currentStreak}d',
-          'Streak',
-          '🔥',
-          AppTheme.warning,
-        )),
+          child: _statCard(
+            '${habits.currentStreak}d',
+            'Streak',
+            '🔥',
+            AppTheme.warning,
+          ),
+        ),
         const SizedBox(width: 12),
         Expanded(
-            child: _statCard(
-          '₹${expenses.weekTotal().toStringAsFixed(0)}',
-          'This week',
-          '💸',
-          AppTheme.accent,
-        )),
+          child: _statCard(
+            '₹${expenses.weekTotal().toStringAsFixed(0)}',
+            'This week',
+            '💸',
+            AppTheme.accent,
+          ),
+        ),
       ],
     );
   }
 
-  Widget _statCard(
-      String value, String label, String emoji, Color color) {
+  Widget _statCard(String value, String label, String emoji, Color color) {
     return Container(
       padding: const EdgeInsets.all(14),
       decoration: BoxDecoration(
@@ -457,14 +490,18 @@ class _ProfileScreenState extends State<ProfileScreen>
         children: [
           Text(emoji, style: const TextStyle(fontSize: 18)),
           const SizedBox(height: 6),
-          Text(value,
-              style: TextStyle(
-                  color: color,
-                  fontSize: 18,
-                  fontWeight: FontWeight.w900)),
-          Text(label,
-              style: const TextStyle(
-                  color: AppTheme.textSecondary, fontSize: 11)),
+          Text(
+            value,
+            style: TextStyle(
+              color: color,
+              fontSize: 18,
+              fontWeight: FontWeight.w900,
+            ),
+          ),
+          Text(
+            label,
+            style: const TextStyle(color: AppTheme.textSecondary, fontSize: 11),
+          ),
         ],
       ),
     );
@@ -472,7 +509,10 @@ class _ProfileScreenState extends State<ProfileScreen>
 
   // ── Spirit animal card ───────────────────────────────────────
   Widget _buildAnimalCard(
-      BuildContext context, UserProvider user, _Animal animal) {
+    BuildContext context,
+    UserProvider user,
+    _Animal animal,
+  ) {
     return GestureDetector(
       onTap: () => _changeAnimal(context, user),
       child: AnimatedContainer(
@@ -481,29 +521,23 @@ class _ProfileScreenState extends State<ProfileScreen>
         decoration: BoxDecoration(
           color: animal.bg,
           borderRadius: BorderRadius.circular(20),
-          border: Border.all(
-              color: animal.color.withOpacity(0.35), width: 1.5),
+          border: Border.all(color: animal.color.withOpacity(0.35), width: 1.5),
         ),
         child: Row(
           children: [
-            Text(animal.emoji,
-                style: const TextStyle(fontSize: 36)),
+            Text(animal.emoji, style: const TextStyle(fontSize: 36)),
             const SizedBox(width: 16),
             Expanded(
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Row(
-                    children: [
-                      Text(
-                        'Spirit Animal: ${animal.label}',
-                        style: TextStyle(
-                          color: animal.color,
-                          fontWeight: FontWeight.w800,
-                          fontSize: 15,
-                        ),
-                      ),
-                    ],
+                  Text(
+                    'Spirit Animal: ${animal.label}',
+                    style: TextStyle(
+                      color: animal.color,
+                      fontWeight: FontWeight.w800,
+                      fontSize: 15,
+                    ),
                   ),
                   const SizedBox(height: 3),
                   Text(
@@ -517,8 +551,11 @@ class _ProfileScreenState extends State<ProfileScreen>
                 ],
               ),
             ),
-            Icon(Icons.swap_horiz_rounded,
-                color: animal.color.withOpacity(0.6), size: 20),
+            Icon(
+              Icons.swap_horiz_rounded,
+              color: animal.color.withOpacity(0.6),
+              size: 20,
+            ),
           ],
         ),
       ),
@@ -549,14 +586,13 @@ class _ProfileScreenState extends State<ProfileScreen>
           _divider(),
           _menuItem(
             icon: Icons.copy_outlined,
-            label: 'Copy phone number',
+            label: 'Copy email address',
             onTap: () {
-              if (user.phoneNumber != null) {
-                Clipboard.setData(
-                    ClipboardData(text: user.phoneNumber!));
+              if (user.email != null) {
+                Clipboard.setData(ClipboardData(text: user.email!));
                 ScaffoldMessenger.of(context).showSnackBar(
                   const SnackBar(
-                    content: Text('Phone number copied'),
+                    content: Text('Email address copied'),
                     behavior: SnackBarBehavior.floating,
                   ),
                 );
@@ -578,8 +614,7 @@ class _ProfileScreenState extends State<ProfileScreen>
       onTap: onTap,
       borderRadius: BorderRadius.circular(20),
       child: Padding(
-        padding:
-            const EdgeInsets.symmetric(horizontal: 18, vertical: 16),
+        padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 16),
         child: Row(
           children: [
             Container(
@@ -602,9 +637,11 @@ class _ProfileScreenState extends State<ProfileScreen>
                 ),
               ),
             ),
-            Icon(Icons.chevron_right_rounded,
-                color: AppTheme.textSecondary.withOpacity(0.5),
-                size: 20),
+            Icon(
+              Icons.chevron_right_rounded,
+              color: AppTheme.textSecondary.withOpacity(0.5),
+              size: 20,
+            ),
           ],
         ),
       ),
@@ -612,11 +649,11 @@ class _ProfileScreenState extends State<ProfileScreen>
   }
 
   Widget _divider() => Divider(
-        height: 1,
-        color: AppTheme.surfaceLight,
-        indent: 18,
-        endIndent: 18,
-      );
+    height: 1,
+    color: AppTheme.surfaceLight,
+    indent: 18,
+    endIndent: 18,
+  );
 
   // ── Sign-out button ──────────────────────────────────────────
   Widget _buildSignOutButton(BuildContext context) {
@@ -649,6 +686,7 @@ class _ProfileScreenState extends State<ProfileScreen>
     );
   }
 }
+
 // ── Animal picker bottom sheet ────────────────────────────────────
 class _AnimalPickerSheet extends StatefulWidget {
   final String currentAnimal;
@@ -673,8 +711,7 @@ class _AnimalPickerSheetState extends State<_AnimalPickerSheet> {
       padding: const EdgeInsets.all(24),
       decoration: const BoxDecoration(
         color: AppTheme.surface,
-        borderRadius:
-            BorderRadius.vertical(top: Radius.circular(24)),
+        borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
       ),
       child: Column(
         mainAxisSize: MainAxisSize.min,
@@ -682,7 +719,8 @@ class _AnimalPickerSheetState extends State<_AnimalPickerSheet> {
         children: [
           Center(
             child: Container(
-              width: 40, height: 4,
+              width: 40,
+              height: 4,
               decoration: BoxDecoration(
                 color: AppTheme.surfaceLight,
                 borderRadius: BorderRadius.circular(2),
@@ -701,8 +739,7 @@ class _AnimalPickerSheetState extends State<_AnimalPickerSheet> {
           const SizedBox(height: 4),
           const Text(
             'Pick the one that truly speaks to your soul right now.',
-            style: TextStyle(
-                color: AppTheme.textSecondary, fontSize: 13),
+            style: TextStyle(color: AppTheme.textSecondary, fontSize: 13),
           ),
           const SizedBox(height: 20),
           ..._animals.map((a) {
@@ -713,10 +750,11 @@ class _AnimalPickerSheetState extends State<_AnimalPickerSheet> {
                 duration: const Duration(milliseconds: 200),
                 margin: const EdgeInsets.only(bottom: 10),
                 padding: const EdgeInsets.symmetric(
-                    horizontal: 14, vertical: 12),
+                  horizontal: 14,
+                  vertical: 12,
+                ),
                 decoration: BoxDecoration(
-                  color:
-                      selected ? a.bg : AppTheme.bg,
+                  color: selected ? a.bg : AppTheme.bg,
                   borderRadius: BorderRadius.circular(14),
                   border: Border.all(
                     color: selected
@@ -738,8 +776,10 @@ class _AnimalPickerSheetState extends State<_AnimalPickerSheet> {
                         shape: BoxShape.circle,
                       ),
                       child: Center(
-                        child: Text(a.emoji,
-                            style: const TextStyle(fontSize: 22)),
+                        child: Text(
+                          a.emoji,
+                          style: const TextStyle(fontSize: 22),
+                        ),
                       ),
                     ),
                     const SizedBox(width: 12),
@@ -747,20 +787,22 @@ class _AnimalPickerSheetState extends State<_AnimalPickerSheet> {
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          Text(a.label,
-                              style: TextStyle(
-                                color: selected
-                                    ? a.color
-                                    : AppTheme.textPrimary,
-                                fontWeight: FontWeight.w800,
-                                fontSize: 14,
-                              )),
-                          Text('"${a.desc}"',
-                              style: const TextStyle(
-                                color: AppTheme.textSecondary,
-                                fontSize: 11,
-                                fontStyle: FontStyle.italic,
-                              )),
+                          Text(
+                            a.label,
+                            style: TextStyle(
+                              color: selected ? a.color : AppTheme.textPrimary,
+                              fontWeight: FontWeight.w800,
+                              fontSize: 14,
+                            ),
+                          ),
+                          Text(
+                            '"${a.desc}"',
+                            style: const TextStyle(
+                              color: AppTheme.textSecondary,
+                              fontSize: 11,
+                              fontStyle: FontStyle.italic,
+                            ),
+                          ),
                         ],
                       ),
                     ),
@@ -774,8 +816,11 @@ class _AnimalPickerSheetState extends State<_AnimalPickerSheet> {
                           color: a.color,
                           shape: BoxShape.circle,
                         ),
-                        child: const Icon(Icons.check,
-                            size: 13, color: Colors.black87),
+                        child: const Icon(
+                          Icons.check,
+                          size: 13,
+                          color: Colors.black87,
+                        ),
                       ),
                     ),
                   ],
@@ -788,17 +833,17 @@ class _AnimalPickerSheetState extends State<_AnimalPickerSheet> {
             width: double.infinity,
             child: ElevatedButton(
               onPressed: () {
-                context
-                    .read<UserProvider>()
-                    .setSpiritAnimal(_selected);
+                context.read<UserProvider>().setSpiritAnimal(_selected);
                 Navigator.pop(context);
               },
               style: ElevatedButton.styleFrom(
                 backgroundColor: _animalFor(_selected).color,
                 foregroundColor: Colors.black87,
               ),
-              child: const Text('Save',
-                  style: TextStyle(fontWeight: FontWeight.w800)),
+              child: const Text(
+                'Save',
+                style: TextStyle(fontWeight: FontWeight.w800),
+              ),
             ),
           ),
         ],
