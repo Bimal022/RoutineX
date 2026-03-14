@@ -11,33 +11,26 @@ import '../widgets/habit_tile.dart';
 import '../widgets/progress_bar.dart';
 import '../theme.dart';
 
-class HomeScreen extends StatefulWidget {
+class HomeScreen extends StatelessWidget {
   const HomeScreen({super.key});
-
-  @override
-  State<HomeScreen> createState() => _HomeScreenState();
-}
-
-class _HomeScreenState extends State<HomeScreen> {
-  Future<void> requestNotificationPermission() async {
-    PermissionStatus status = await Permission.notification.request();
-    if (status.isGranted) {
-      print("Notification permission granted");
-    } else if (status.isDenied) {
-      print("Notification permission denied");
-    } else if (status.isPermanentlyDenied) {
-      openAppSettings();
-    }
-  }
   void init() {
-    requestNotificationPermission();
-  }
-
+      Future<void> requestNotificationPermission() async {
+        PermissionStatus status = await Permission.notification.request();
+        if (status.isGranted) {
+          print("Notification permission granted");
+        } else if (status.isDenied) {
+          print("Notification permission denied");
+        } else if (status.isPermanentlyDenied) {
+          openAppSettings();
+        }
+      }
+    }
   @override
   Widget build(BuildContext context) {
     final habitProvider = Provider.of<HabitProvider>(context);
     final userProvider = Provider.of<UserProvider>(context);
     final expenseProvider = Provider.of<ExpenseProvider>(context);
+    
 
     return Scaffold(
       body: SafeArea(

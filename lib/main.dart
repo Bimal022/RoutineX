@@ -27,8 +27,9 @@ void init() async {
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp();
-  await NotificationService.init();
+  await NotificationService.initialize();
   await GoogleSignIn.instance.initialize();
+  await NotificationService.requestPermission();
 
   runApp(
     MultiProvider(
@@ -42,8 +43,35 @@ void main() async {
   );
 }
 
-class RoutineXApp extends StatelessWidget {
+class RoutineXApp extends StatefulWidget {
+  static final GlobalKey<NavigatorState> navigatorKey =
+      GlobalKey<NavigatorState>();
   const RoutineXApp({super.key});
+
+  @override
+  State<RoutineXApp> createState() => _RoutineXAppState();
+}
+
+class _RoutineXAppState extends State<RoutineXApp> {
+  @override
+  void initState() {
+    super.initState();
+
+    // ② Wire the "Done" button action to HabitProvider.toggleHabit
+    NotificationService.setListeners(
+      onDoneAction: (habitId) async {
+        // Access the provider without a BuildContext using the navigator key
+        final context = RoutineXApp.navigatorKey.currentContext;
+        if (context != null && context.mounted) {
+          final provider = Provider.of<HabitProvider>(context, listen: false);
+          // Only toggle if not already completed (avoids un-doing from notif)
+          if (!provider.isCompleted(habitId)) {
+            await provider.toggleHabit(habitId);
+          }
+        }
+      },
+    );
+  }
 
   @override
   Widget build(BuildContext context) {

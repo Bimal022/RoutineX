@@ -1,5 +1,6 @@
 import 'dart:developer';
 
+import 'package:awesome_notifications/awesome_notifications.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -14,16 +15,12 @@ class HabitProvider extends ChangeNotifier {
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
 
   // ── Helpers ───────────────────────────────────────────────────
-  /// Current user's UID. Throws if not signed in.
   String get _uid => FirebaseAuth.instance.currentUser!.uid;
 
-  /// Root reference: users/{uid}
   DocumentReference get _userDoc => _firestore.collection('users').doc(_uid);
 
-  /// users/{uid}/habits
   CollectionReference get _habitsCol => _userDoc.collection('habits');
 
-  /// users/{uid}/habit_logs
   CollectionReference get _logsCol => _userDoc.collection('habit_logs');
 
   // ── Getters ───────────────────────────────────────────────────
@@ -35,10 +32,8 @@ class HabitProvider extends ChangeNotifier {
   }
 
   // ── Load ──────────────────────────────────────────────────────
-  /// Call once after sign-in / onboarding completes.
   Future<void> loadHabits() async {
     try {
-      // Load habits
       final habitsSnap = await _habitsCol.get();
       _habits.clear();
       for (final doc in habitsSnap.docs) {
@@ -46,7 +41,6 @@ class HabitProvider extends ChangeNotifier {
         _habits.add(_habitFromMap(data));
       }
 
-      // Load today's logs so completion state is correct immediately
       await _loadTodayLogs();
 
       notifyListeners();
@@ -57,7 +51,6 @@ class HabitProvider extends ChangeNotifier {
 
   Future<void> _loadTodayLogs() async {
     final today = DateTime.now();
-    // Firestore date range for today
     final startOfDay = DateTime(today.year, today.month, today.day);
     final endOfDay = DateTime(today.year, today.month, today.day, 23, 59, 59);
 
@@ -117,15 +110,55 @@ class HabitProvider extends ChangeNotifier {
         'minute': minute,
         'createdAt': FieldValue.serverTimestamp(),
       });
-      log('NotiTest Habit set at hour $hour and minute $minute');
+      log(
+        'NotiTest: Habit scheduled at hour $hour and minute $minute, allDay=$allDay',
+      );
+      if (allDay) {
+  final now = DateTime.now();
 
+  // Fire an immediate one-shot notification right now
+  await AwesomeNotifications().createNotification(
+    content: NotificationContent(
+      id: NotificationService.notifIdFromHabitId(id), // make this public
+      channelKey: 'habit_channel',
+      title: '$emoji $name',
+      body: 'Tap Done when you complete it today!',
+      notificationLayout: NotificationLayout.Default,
+      payload: {'habitId': id},
+      category: NotificationCategory.Reminder,
+      wakeUpScreen: true,
+      autoDismissible: false,
+    ),
+    actionButtons: [
+      NotificationActionButton(
+        key: kDoneActionKey,
+        label: '✅ Done',
+        actionType: ActionType.SilentAction,
+        autoDismissible: true,
+      ),
+    ],
+  );
+
+  // Schedule daily repeat at the same time of day
+  await NotificationService.scheduleHabitNotification(
+    habitId: '${id}_daily',
+    habitName: name,
+    emoji: emoji,
+    allDay: true,
+    hour: now.hour,
+    minute: now.minute + 1, // slight delay so it doesn't double-fire
+    weekdays: weekdays,
+  );
+}
       if (hour != null && minute != null) {
         await NotificationService.scheduleHabitNotification(
           habitId: id,
           habitName: name,
+          emoji: emoji,
           allDay: allDay,
           hour: hour,
           minute: minute,
+          weekdays: weekdays,
         );
       }
     } catch (e) {
@@ -148,11 +181,9 @@ class HabitProvider extends ChangeNotifier {
       final logDocs = await _logsCol.where('habitId', isEqualTo: habitId).get();
 
       final batch = _firestore.batch();
-
       for (final doc in logDocs.docs) {
         batch.delete(doc.reference);
       }
-
       await batch.commit();
     } catch (e) {
       debugPrint('HabitProvider.removeHabit error: $e');
@@ -181,9 +212,12 @@ class HabitProvider extends ChangeNotifier {
     }
     notifyListeners(); // optimistic update
 
+    // Dismiss today's notification when marked done; no-op if already dismissed
+    if (completed) {
+      await NotificationService.dismissTodayNotification(habitId);
+    }
+
     try {
-      // Use habitId + date as a deterministic doc ID so toggling
-      // updates the same document instead of creating duplicates.
       final logId =
           '${habitId}_${today.year}${today.month.toString().padLeft(2, '0')}${today.day.toString().padLeft(2, '0')}';
 
