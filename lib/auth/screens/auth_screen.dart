@@ -61,7 +61,7 @@ class _AuthScreenState extends State<AuthScreen>
 
       // Step 3 — Build Firebase credential
       final credential = GoogleAuthProvider.credential(
-        idToken: (await googleUser.authentication).idToken,
+        idToken: (googleUser.authentication).idToken,
         accessToken: clientAuth.accessToken,
       );
 

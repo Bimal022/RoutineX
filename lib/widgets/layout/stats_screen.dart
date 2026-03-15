@@ -797,15 +797,19 @@ String _weekdayLabel(List<int> days) {
 
 String _habitMotivation(int done, int total) {
   if (total == 0) return "Add your first habit and start building momentum!";
-  if (done == 0)
+  if (done == 0) {
     return "A new day, a fresh start. You've got this — let's knock out today's habits!";
-  if (done == total)
+  }
+  if (done == total) {
     return "Perfect day! Every single habit done. You're unstoppable! 🎉";
+  }
   final remaining = total - done;
-  if (done >= total * 0.75)
+  if (done >= total * 0.75) {
     return "Almost there! Just $remaining more to go. Finish strong!";
-  if (done >= total * 0.5)
+  }
+  if (done >= total * 0.5) {
     return "Halfway through! Keep the momentum going — $remaining habits left.";
+  }
   return "Great start! $done down, $remaining to go. Keep moving!";
 }
 
