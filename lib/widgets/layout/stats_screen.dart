@@ -539,28 +539,41 @@ class _ExpensesTab extends StatelessWidget {
   }
 }
 
-// Expense timeline - shows today's individual expense entries with time
+// Expense timeline - shows today's individual expense entries with date
 class _ExpenseTimeline extends StatelessWidget {
   const _ExpenseTimeline({required this.items});
 
-  /// Each item is a map: { 'name': String, 'amount': double, 'category': String,
-  ///                        'time': DateTime, 'emoji': String? }
+  /// Each item is a map: { 'note': String, 'amount': double, 'category': String,
+  ///                        'date': DateTime, 'emoji': String? }
   final List<Map<String, dynamic>> items;
 
   @override
   Widget build(BuildContext context) {
-    // Sort by time descending (most recent first)
-    final sorted = [
-      ...items,
-    ]..sort((a, b) => (b['time'] as DateTime).compareTo(a['time'] as DateTime));
+    // Sort by date descending (most recent first)
+    debugPrint("Building expense timeline with items: $items");
+    final sorted = [...items]
+  ..sort((a, b) {
+    final dateA = a['date'] as DateTime?;
+    final dateB = b['date'] as DateTime?;
+
+    if (dateA == null && dateB == null) return 0;
+    if (dateA == null) return 1;
+    if (dateB == null) return -1;
+
+    return dateB.compareTo(dateA);
+  });
 
     return Column(
       children: List.generate(sorted.length, (i) {
         final item = sorted[i];
-        final time = item['time'] as DateTime;
+        final date = item['date'] as DateTime?;
+        if(date == null) {
+          debugPrint("Warning: Expense item missing date: $item");
+          return const SizedBox();
+        }
         final isLast = i == sorted.length - 1;
-        final hour = time.hour;
-        final min = time.minute.toString().padLeft(2, '0');
+        final hour = date.hour;
+        final min = date.minute.toString().padLeft(2, '0');
         final period = hour >= 12 ? 'PM' : 'AM';
         final displayHour = hour % 12 == 0 ? 12 : hour % 12;
         final timeLabel = "$displayHour:$min $period";
@@ -629,7 +642,7 @@ class _ExpenseTimeline extends StatelessWidget {
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             Text(
-                              item['name'] as String? ?? 'Expense',
+                              item['note'] as String? ?? 'Expense',
                               style: const TextStyle(
                                 color: AppTheme.textPrimary,
                                 fontWeight: FontWeight.w700,

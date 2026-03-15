@@ -117,7 +117,7 @@ class NotificationService {
               repeats: true,
             )
           : NotificationCalendar(
-              weekday: weekdays.first, // see note below for multi-day
+              weekday: weekdays.first, 
               hour: scheduleHour,
               minute: scheduleMinute,
               second: 0,

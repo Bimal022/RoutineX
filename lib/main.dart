@@ -67,6 +67,7 @@ class _RoutineXAppState extends State<RoutineXApp> {
           // Only toggle if not already completed (avoids un-doing from notif)
           if (!provider.isCompleted(habitId)) {
             await provider.toggleHabit(habitId);
+            await provider.loadHabits(); // Refresh to sync with Firestore after toggle
           }
         }
       },

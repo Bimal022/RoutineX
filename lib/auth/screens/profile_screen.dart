@@ -317,7 +317,6 @@ class _ProfileScreenState extends State<ProfileScreen>
       ),
       child: Column(
         children: [
-          // Avatar — shows Google profile photo if available, else spirit animal
           Stack(
             alignment: Alignment.bottomRight,
             children: [
@@ -343,18 +342,7 @@ class _ProfileScreenState extends State<ProfileScreen>
                     ],
                   ),
                   child: ClipOval(
-                    child: user.photoUrl != null
-                        ? Image.network(
-                            user.photoUrl!,
-                            fit: BoxFit.cover,
-                            errorBuilder: (_, __, ___) => Center(
-                              child: Text(
-                                animal.emoji,
-                                style: const TextStyle(fontSize: 52),
-                              ),
-                            ),
-                          )
-                        : Center(
+                    child: Center(
                             child: Text(
                               animal.emoji,
                               style: const TextStyle(fontSize: 52),
