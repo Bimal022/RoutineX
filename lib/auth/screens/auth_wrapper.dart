@@ -66,12 +66,24 @@ class _AuthWrapperState extends State<AuthWrapper> {
     );
   }
 
-  Widget _splash() => const Scaffold(
+  Widget _splash() {
+  return const Scaffold(
     backgroundColor: Color(0xFF0F0E17),
     body: Center(
-      child: CircularProgressIndicator(
-        valueColor: AlwaysStoppedAnimation(Color(0xFF6C63FF)),
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Image(
+            image: AssetImage('assets/logo/splash_screen.png'),
+            width: 180,
+          ),
+          SizedBox(height: 40),
+          CircularProgressIndicator(
+            valueColor: AlwaysStoppedAnimation(Color(0xFF6C63FF)),
+          ),
+        ],
       ),
     ),
   );
+}
 }

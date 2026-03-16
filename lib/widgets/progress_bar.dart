@@ -17,12 +17,13 @@ class ProgressBar extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
+        // REPLACED: Purple gradient with Logo-inspired Teal/Lime gradient
         gradient: const LinearGradient(
           colors: [Color(0xFF6C63FF), Color(0xFF9C27B0)],
-          begin: Alignment.topLeft,
-          end: Alignment.bottomRight,
+          begin: Alignment.bottomLeft,
+          end: Alignment.topRight,
         ),
-        borderRadius: BorderRadius.circular(20),
+        borderRadius: BorderRadius.circular(24),
         boxShadow: [
           BoxShadow(
             color: AppTheme.primary.withOpacity(0.3),
@@ -40,10 +41,12 @@ class ProgressBar extends StatelessWidget {
               Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  const Text(
+                  Text(
                     "Today's Progress",
                     style: TextStyle(
-                      color: Colors.white70,
+                      color: AppTheme.textPrimary.withOpacity(
+                        0.8,
+                      ), // Use Theme color
                       fontSize: 13,
                       fontWeight: FontWeight.w500,
                     ),
@@ -54,7 +57,8 @@ class ProgressBar extends StatelessWidget {
                         ? "No habits yet"
                         : "$completed / $total completed",
                     style: const TextStyle(
-                      color: Colors.white,
+                      color: Colors
+                          .white, // Keep white for high contrast on gradient
                       fontSize: 20,
                       fontWeight: FontWeight.w800,
                     ),
@@ -67,7 +71,9 @@ class ProgressBar extends StatelessWidget {
                   vertical: 8,
                 ),
                 decoration: BoxDecoration(
-                  color: Colors.white.withOpacity(0.15),
+                  color: Colors.white.withOpacity(
+                    0.2,
+                  ), // Increased opacity for better readability
                   borderRadius: BorderRadius.circular(12),
                 ),
                 child: Row(
@@ -87,22 +93,27 @@ class ProgressBar extends StatelessWidget {
               ),
             ],
           ),
-          const SizedBox(height: 16),
+          const SizedBox(height: 20),
           ClipRRect(
-            borderRadius: BorderRadius.circular(8),
+            borderRadius: BorderRadius.circular(10),
             child: LinearProgressIndicator(
               value: percent,
-              backgroundColor: Colors.white.withOpacity(0.2),
+              // Dark teal background for the bar track to match the theme depth
+              backgroundColor: AppTheme.bg.withOpacity(0.3),
               valueColor: const AlwaysStoppedAnimation<Color>(Colors.white),
-              minHeight: 8,
+              minHeight: 10, // Slightly thicker for a modern look
             ),
           ),
-          const SizedBox(height: 8),
+          const SizedBox(height: 10),
           Text(
             total == 0
                 ? "Add habits to get started"
                 : "${(percent * 100).toInt()}% done — keep going!",
-            style: const TextStyle(color: Colors.white70, fontSize: 12),
+            style: const TextStyle(
+              color: Colors.white70,
+              fontSize: 12,
+              fontWeight: FontWeight.w600,
+            ),
           ),
         ],
       ),

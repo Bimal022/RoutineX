@@ -32,6 +32,8 @@ flutter:
   uses-material-design: true
   assets:
     - assets/logo/routineX_logo.png
+    - assets/logo/full_logo.png
+    - assets/logo/
 
 flutter_icons:
   android: true
