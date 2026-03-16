@@ -68,7 +68,7 @@ class _AuthWrapperState extends State<AuthWrapper> {
 
   Widget _splash() {
   return const Scaffold(
-    backgroundColor: Color(0xFF0F0E17),
+    backgroundColor: Color(0xFFFFFFFF),
     body: Center(
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,

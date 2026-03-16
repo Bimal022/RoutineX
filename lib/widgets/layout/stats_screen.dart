@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:routinex/widgets/layout/expense_tab.dart';
 import '../../providers/habit_provider.dart';
 import '../../providers/expense_provider.dart';
 import '../../theme.dart';
@@ -29,7 +30,7 @@ class _StatsScreenState extends State<StatsScreen> {
             Expanded(
               child: _tab == 0
                   ? _HabitsTab(habits: habits)
-                  : _ExpensesTab(expenses: expenses),
+                  : ExpensesTab(expenses: expenses),
             ),
           ],
         ),
@@ -415,270 +416,270 @@ class _HabitTimeline extends StatelessWidget {
 // EXPENSES TAB
 // ─────────────────────────────────────────────────────────────────────────────
 
-class _ExpensesTab extends StatelessWidget {
-  const _ExpensesTab({required this.expenses});
-  final ExpenseProvider expenses;
+// class _ExpensesTab extends StatelessWidget {
+//   const _ExpensesTab({required this.expenses});
+//   final ExpenseProvider expenses;
 
-  @override
-  Widget build(BuildContext context) {
-    final totals = expenses.categoryTotals();
-    final todayTotal = expenses.todayTotal();
-    final weekTotal = expenses.weekTotal();
-    final todayItems = expenses.todayExpenses;
+//   @override
+//   Widget build(BuildContext context) {
+//     final totals = expenses.categoryTotals();
+//     final todayTotal = expenses.todayTotal();
+//     final weekTotal = expenses.weekTotal();
+//     final todayItems = expenses.todayExpenses;
 
-    return SingleChildScrollView(
-      padding: const EdgeInsets.fromLTRB(20, 0, 20, 32),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          // ── Motivational card ──────────────────────────────────────
-          _MotivationalCard(
-            message: _expenseMotivation(todayTotal, weekTotal),
-            color: _expenseColor(todayTotal),
-            emoji: _expenseEmoji(todayTotal),
-          ),
-          const SizedBox(height: 20),
+//     return SingleChildScrollView(
+//       padding: const EdgeInsets.fromLTRB(20, 0, 20, 32),
+//       child: Column(
+//         crossAxisAlignment: CrossAxisAlignment.start,
+//         children: [
+//           // ── Motivational card ──────────────────────────────────────
+//           _MotivationalCard(
+//             message: _expenseMotivation(todayTotal, weekTotal),
+//             color: _expenseColor(todayTotal),
+//             emoji: _expenseEmoji(todayTotal),
+//           ),
+//           const SizedBox(height: 20),
 
-          // ── Summary row ────────────────────────────────────────────
-          Row(
-            children: [
-              Expanded(
-                child: _statCard(
-                  "Today",
-                  "₹${todayTotal.toStringAsFixed(0)}",
-                  "📅",
-                  AppTheme.accent,
-                ),
-              ),
-              const SizedBox(width: 10),
-              Expanded(
-                child: _statCard(
-                  "This Week",
-                  "₹${weekTotal.toStringAsFixed(0)}",
-                  "📆",
-                  AppTheme.secondary,
-                ),
-              ),
-            ],
-          ),
+//           // ── Summary row ────────────────────────────────────────────
+//           Row(
+//             children: [
+//               Expanded(
+//                 child: _statCard(
+//                   "Today",
+//                   "₹${todayTotal.toStringAsFixed(0)}",
+//                   "📅",
+//                   AppTheme.accent,
+//                 ),
+//               ),
+//               const SizedBox(width: 10),
+//               Expanded(
+//                 child: _statCard(
+//                   "This Week",
+//                   "₹${weekTotal.toStringAsFixed(0)}",
+//                   "📆",
+//                   AppTheme.secondary,
+//                 ),
+//               ),
+//             ],
+//           ),
 
-          if (totals.isEmpty) ...[
-            const SizedBox(height: 20),
-            _emptyCard("No expenses recorded yet", "💰"),
-          ] else ...[
-            // ── Today's expense log ────────────────────────────────
-            const SizedBox(height: 28),
-            _sectionTitle("Today's Activity"),
-            const SizedBox(height: 12),
-            if (todayItems.isEmpty)
-              _emptyCard("No expenses logged today", "🌿")
-            else
-              _ExpenseTimeline(
-                items: todayItems
-                    .map((e) => {'amount': e.amount, 'category': e.category})
-                    .toList(),
-              ),
+//           if (totals.isEmpty) ...[
+//             const SizedBox(height: 20),
+//             _emptyCard("No expenses recorded yet", "💰"),
+//           ] else ...[
+//             // ── Today's expense log ────────────────────────────────
+//             const SizedBox(height: 28),
+//             _sectionTitle("Today's Activity"),
+//             const SizedBox(height: 12),
+//             if (todayItems.isEmpty)
+//               _emptyCard("No expenses logged today", "🌿")
+//             else
+//               _ExpenseTimeline(
+//                 items: todayItems
+//                     .map((e) => {'amount': e.amount, 'category': e.category})
+//                     .toList(),
+//               ),
 
-            // ── Category breakdown ─────────────────────────────────
-            const SizedBox(height: 28),
-            _sectionTitle("By Category"),
-            const SizedBox(height: 12),
-            ...() {
-              final maxVal = totals.values.reduce((a, b) => a > b ? a : b);
-              return totals.entries.map(
-                (entry) => Container(
-                  margin: const EdgeInsets.only(bottom: 8),
-                  padding: const EdgeInsets.all(14),
-                  decoration: BoxDecoration(
-                    color: AppTheme.surface,
-                    borderRadius: BorderRadius.circular(12),
-                    border: Border.all(color: AppTheme.surfaceLight),
-                  ),
-                  child: Column(
-                    children: [
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          Text(
-                            entry.key,
-                            style: const TextStyle(
-                              color: AppTheme.textPrimary,
-                              fontWeight: FontWeight.w600,
-                            ),
-                          ),
-                          Text(
-                            "₹${entry.value.toStringAsFixed(0)}",
-                            style: const TextStyle(
-                              color: AppTheme.accent,
-                              fontWeight: FontWeight.w800,
-                            ),
-                          ),
-                        ],
-                      ),
-                      const SizedBox(height: 8),
-                      ClipRRect(
-                        borderRadius: BorderRadius.circular(4),
-                        child: LinearProgressIndicator(
-                          value: entry.value / maxVal,
-                          backgroundColor: AppTheme.surfaceLight,
-                          valueColor: const AlwaysStoppedAnimation<Color>(
-                            AppTheme.accent,
-                          ),
-                          minHeight: 6,
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-              );
-            }(),
-          ],
-        ],
-      ),
-    );
-  }
-}
+//             // ── Category breakdown ─────────────────────────────────
+//             const SizedBox(height: 28),
+//             _sectionTitle("By Category"),
+//             const SizedBox(height: 12),
+//             ...() {
+//               final maxVal = totals.values.reduce((a, b) => a > b ? a : b);
+//               return totals.entries.map(
+//                 (entry) => Container(
+//                   margin: const EdgeInsets.only(bottom: 8),
+//                   padding: const EdgeInsets.all(14),
+//                   decoration: BoxDecoration(
+//                     color: AppTheme.surface,
+//                     borderRadius: BorderRadius.circular(12),
+//                     border: Border.all(color: AppTheme.surfaceLight),
+//                   ),
+//                   child: Column(
+//                     children: [
+//                       Row(
+//                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
+//                         children: [
+//                           Text(
+//                             entry.key,
+//                             style: const TextStyle(
+//                               color: AppTheme.textPrimary,
+//                               fontWeight: FontWeight.w600,
+//                             ),
+//                           ),
+//                           Text(
+//                             "₹${entry.value.toStringAsFixed(0)}",
+//                             style: const TextStyle(
+//                               color: AppTheme.accent,
+//                               fontWeight: FontWeight.w800,
+//                             ),
+//                           ),
+//                         ],
+//                       ),
+//                       const SizedBox(height: 8),
+//                       ClipRRect(
+//                         borderRadius: BorderRadius.circular(4),
+//                         child: LinearProgressIndicator(
+//                           value: entry.value / maxVal,
+//                           backgroundColor: AppTheme.surfaceLight,
+//                           valueColor: const AlwaysStoppedAnimation<Color>(
+//                             AppTheme.accent,
+//                           ),
+//                           minHeight: 6,
+//                         ),
+//                       ),
+//                     ],
+//                   ),
+//                 ),
+//               );
+//             }(),
+//           ],
+//         ],
+//       ),
+//     );
+//   }
+// }
 
-// Expense timeline - shows today's individual expense entries with date
-class _ExpenseTimeline extends StatelessWidget {
-  const _ExpenseTimeline({required this.items});
+// // Expense timeline - shows today's individual expense entries with date
+// class _ExpenseTimeline extends StatelessWidget {
+//   const _ExpenseTimeline({required this.items});
 
-  /// Each item is a map: { 'note': String, 'amount': double, 'category': String,
-  ///                        'date': DateTime, 'emoji': String? }
-  final List<Map<String, dynamic>> items;
+//   /// Each item is a map: { 'note': String, 'amount': double, 'category': String,
+//   ///                        'date': DateTime, 'emoji': String? }
+//   final List<Map<String, dynamic>> items;
 
-  @override
-  Widget build(BuildContext context) {
-    // Sort by date descending (most recent first)
-    debugPrint("Building expense timeline with items: $items");
-    final sorted = [...items]
-  ..sort((a, b) {
-    final dateA = a['date'] as DateTime?;
-    final dateB = b['date'] as DateTime?;
+//   @override
+//   Widget build(BuildContext context) {
+//     // Sort by date descending (most recent first)
+//     debugPrint("Building expense timeline with items: $items");
+//     final sorted = [...items]
+//   ..sort((a, b) {
+//     final dateA = a['date'] as DateTime?;
+//     final dateB = b['date'] as DateTime?;
 
-    if (dateA == null && dateB == null) return 0;
-    if (dateA == null) return 1;
-    if (dateB == null) return -1;
+//     if (dateA == null && dateB == null) return 0;
+//     if (dateA == null) return 1;
+//     if (dateB == null) return -1;
 
-    return dateB.compareTo(dateA);
-  });
+//     return dateB.compareTo(dateA);
+//   });
 
-    return Column(
-      children: List.generate(sorted.length, (i) {
-        final item = sorted[i];
-        final date = item['date'] as DateTime?;
-        if(date == null) {
-          debugPrint("Warning: Expense item missing date: $item");
-          return const SizedBox();
-        }
-        final isLast = i == sorted.length - 1;
-        final hour = date.hour;
-        final min = date.minute.toString().padLeft(2, '0');
-        final period = hour >= 12 ? 'PM' : 'AM';
-        final displayHour = hour % 12 == 0 ? 12 : hour % 12;
-        final timeLabel = "$displayHour:$min $period";
+//     return Column(
+//       children: List.generate(sorted.length, (i) {
+//         final item = sorted[i];
+//         final date = item['date'] as DateTime?;
+//         if(date == null) {
+//           debugPrint("Warning: Expense item missing date: $item");
+//           return const SizedBox();
+//         }
+//         final isLast = i == sorted.length - 1;
+//         final hour = date.hour;
+//         final min = date.minute.toString().padLeft(2, '0');
+//         final period = hour >= 12 ? 'PM' : 'AM';
+//         final displayHour = hour % 12 == 0 ? 12 : hour % 12;
+//         final timeLabel = "$displayHour:$min $period";
 
-        return IntrinsicHeight(
-          child: Row(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              // Time
-              SizedBox(
-                width: 72,
-                child: Padding(
-                  padding: const EdgeInsets.only(top: 14),
-                  child: Text(
-                    timeLabel,
-                    textAlign: TextAlign.right,
-                    style: const TextStyle(
-                      color: AppTheme.textSecondary,
-                      fontSize: 11,
-                      fontWeight: FontWeight.w600,
-                    ),
-                  ),
-                ),
-              ),
-              const SizedBox(width: 12),
-              // Dot + line
-              Column(
-                children: [
-                  const SizedBox(height: 16),
-                  Container(
-                    width: 14,
-                    height: 14,
-                    decoration: BoxDecoration(
-                      shape: BoxShape.circle,
-                      color: AppTheme.accent.withOpacity(0.15),
-                      border: Border.all(color: AppTheme.accent, width: 2),
-                    ),
-                  ),
-                  if (!isLast)
-                    Expanded(
-                      child: Container(width: 2, color: AppTheme.surfaceLight),
-                    ),
-                  if (isLast) const SizedBox(height: 16),
-                ],
-              ),
-              const SizedBox(width: 12),
-              // Expense card
-              Expanded(
-                child: Container(
-                  margin: EdgeInsets.only(bottom: isLast ? 0 : 10),
-                  padding: const EdgeInsets.all(14),
-                  decoration: BoxDecoration(
-                    color: AppTheme.surface,
-                    borderRadius: BorderRadius.circular(12),
-                    border: Border.all(color: AppTheme.surfaceLight),
-                  ),
-                  child: Row(
-                    children: [
-                      Text(
-                        item['emoji'] as String? ?? '💳',
-                        style: const TextStyle(fontSize: 20),
-                      ),
-                      const SizedBox(width: 10),
-                      Expanded(
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text(
-                              item['note'] as String? ?? 'Expense',
-                              style: const TextStyle(
-                                color: AppTheme.textPrimary,
-                                fontWeight: FontWeight.w700,
-                                fontSize: 14,
-                              ),
-                            ),
-                            const SizedBox(height: 2),
-                            Text(
-                              item['category'] as String? ?? 'Uncategorized',
-                              style: const TextStyle(
-                                color: AppTheme.textSecondary,
-                                fontSize: 11,
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
-                      Text(
-                        "₹${(item['amount'] as double).toStringAsFixed(0)}",
-                        style: const TextStyle(
-                          color: AppTheme.accent,
-                          fontWeight: FontWeight.w900,
-                          fontSize: 15,
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-              ),
-            ],
-          ),
-        );
-      }),
-    );
-  }
-}
+//         return IntrinsicHeight(
+//           child: Row(
+//             crossAxisAlignment: CrossAxisAlignment.start,
+//             children: [
+//               // Time
+//               SizedBox(
+//                 width: 72,
+//                 child: Padding(
+//                   padding: const EdgeInsets.only(top: 14),
+//                   child: Text(
+//                     timeLabel,
+//                     textAlign: TextAlign.right,
+//                     style: const TextStyle(
+//                       color: AppTheme.textSecondary,
+//                       fontSize: 11,
+//                       fontWeight: FontWeight.w600,
+//                     ),
+//                   ),
+//                 ),
+//               ),
+//               const SizedBox(width: 12),
+//               // Dot + line
+//               Column(
+//                 children: [
+//                   const SizedBox(height: 16),
+//                   Container(
+//                     width: 14,
+//                     height: 14,
+//                     decoration: BoxDecoration(
+//                       shape: BoxShape.circle,
+//                       color: AppTheme.accent.withOpacity(0.15),
+//                       border: Border.all(color: AppTheme.accent, width: 2),
+//                     ),
+//                   ),
+//                   if (!isLast)
+//                     Expanded(
+//                       child: Container(width: 2, color: AppTheme.surfaceLight),
+//                     ),
+//                   if (isLast) const SizedBox(height: 16),
+//                 ],
+//               ),
+//               const SizedBox(width: 12),
+//               // Expense card
+//               Expanded(
+//                 child: Container(
+//                   margin: EdgeInsets.only(bottom: isLast ? 0 : 10),
+//                   padding: const EdgeInsets.all(14),
+//                   decoration: BoxDecoration(
+//                     color: AppTheme.surface,
+//                     borderRadius: BorderRadius.circular(12),
+//                     border: Border.all(color: AppTheme.surfaceLight),
+//                   ),
+//                   child: Row(
+//                     children: [
+//                       Text(
+//                         item['emoji'] as String? ?? '💳',
+//                         style: const TextStyle(fontSize: 20),
+//                       ),
+//                       const SizedBox(width: 10),
+//                       Expanded(
+//                         child: Column(
+//                           crossAxisAlignment: CrossAxisAlignment.start,
+//                           children: [
+//                             Text(
+//                               item['note'] as String? ?? 'Expense',
+//                               style: const TextStyle(
+//                                 color: AppTheme.textPrimary,
+//                                 fontWeight: FontWeight.w700,
+//                                 fontSize: 14,
+//                               ),
+//                             ),
+//                             const SizedBox(height: 2),
+//                             Text(
+//                               item['category'] as String? ?? 'Uncategorized',
+//                               style: const TextStyle(
+//                                 color: AppTheme.textSecondary,
+//                                 fontSize: 11,
+//                               ),
+//                             ),
+//                           ],
+//                         ),
+//                       ),
+//                       Text(
+//                         "₹${(item['amount'] as double).toStringAsFixed(0)}",
+//                         style: const TextStyle(
+//                           color: AppTheme.accent,
+//                           fontWeight: FontWeight.w900,
+//                           fontSize: 15,
+//                         ),
+//                       ),
+//                     ],
+//                   ),
+//                 ),
+//               ),
+//             ],
+//           ),
+//         );
+//       }),
+//     );
+//   }
+// }
 
 // ─────────────────────────────────────────────────────────────────────────────
 // MOTIVATIONAL CARD
