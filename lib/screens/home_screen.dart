@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:routinex/auth/provider/user_provider.dart';
+import 'package:routinex/helper/expense_helpers/expense_helper.dart';
+import 'package:routinex/models/expense.dart';
 import 'package:routinex/widgets/checkbox/add_expense_sheet.dart';
 import 'package:routinex/widgets/checkbox/add_habit_sheet.dart';
 
@@ -82,7 +84,7 @@ class HomeScreen extends StatelessWidget {
                   ),
                 ),
               ),
-      
+
               // Progress
               SliverToBoxAdapter(
                 child: Padding(
@@ -90,7 +92,7 @@ class HomeScreen extends StatelessWidget {
                   child: const ProgressBar(),
                 ),
               ),
-      
+
               // Habits section header
               SliverToBoxAdapter(
                 child: Padding(
@@ -125,7 +127,7 @@ class HomeScreen extends StatelessWidget {
                   ),
                 ),
               ),
-      
+
               // Habit list
               habitProvider.todaysHabits.isEmpty
                   ? SliverToBoxAdapter(
@@ -147,7 +149,7 @@ class HomeScreen extends StatelessWidget {
                         );
                       }, childCount: habitProvider.todaysHabits.length),
                     ),
-      
+
               // Spending section
               SliverToBoxAdapter(
                 child: Padding(
@@ -182,7 +184,7 @@ class HomeScreen extends StatelessWidget {
                   ),
                 ),
               ),
-      
+
               // Spending summary card
               SliverToBoxAdapter(
                 child: Padding(
@@ -190,7 +192,7 @@ class HomeScreen extends StatelessWidget {
                   child: _spendingSummary(expenseProvider),
                 ),
               ),
-      
+
               // Today's expenses list
               SliverToBoxAdapter(
                 child: Padding(
@@ -200,13 +202,14 @@ class HomeScreen extends StatelessWidget {
                       : Column(
                           children: expenseProvider.todayExpenses
                               .map(
-                                (e) => _expenseTile(context, e, expenseProvider),
+                                (e) =>
+                                    _expenseTile(context, e, expenseProvider),
                               )
                               .toList(),
                         ),
                 ),
               ),
-      
+
               const SliverToBoxAdapter(child: SizedBox(height: 32)),
             ],
           ),
@@ -272,7 +275,11 @@ class HomeScreen extends StatelessWidget {
     );
   }
 
-  Widget _expenseTile(BuildContext context, expense, ExpenseProvider provider) {
+  Widget _expenseTile(
+    BuildContext context,
+    Expense expense,
+    ExpenseProvider provider,
+  ) {
     final Map<String, String> emojis = {
       'Food': '🍜',
       'Transport': '🚗',
@@ -297,53 +304,64 @@ class HomeScreen extends StatelessWidget {
         child: const Icon(Icons.delete_outline, color: Colors.red),
       ),
       onDismissed: (_) => provider.removeExpense(expense.id),
-      child: Container(
-        margin: const EdgeInsets.only(bottom: 8),
-        padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
-        decoration: BoxDecoration(
-          color: AppTheme.surface,
-          borderRadius: BorderRadius.circular(14),
-          border: Border.all(color: AppTheme.surfaceLight),
-        ),
-        child: Row(
-          children: [
-            Text(
-              emojis[expense.category] ?? '💸',
-              style: const TextStyle(fontSize: 20),
-            ),
-            const SizedBox(width: 12),
-            Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    expense.note.isNotEmpty ? expense.note : expense.category,
-                    style: const TextStyle(
-                      color: AppTheme.textPrimary,
-                      fontWeight: FontWeight.w600,
-                      fontSize: 14,
-                    ),
-                  ),
-                  if (expense.note.isNotEmpty)
+      child: GestureDetector(
+        onLongPress: () =>
+            ExpenseHelper.showEditExpenseSheet(context, expense, provider),
+        child: Container(
+          margin: const EdgeInsets.only(bottom: 8),
+          padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
+          decoration: BoxDecoration(
+            color: AppTheme.surface,
+            borderRadius: BorderRadius.circular(14),
+            border: Border.all(color: AppTheme.surfaceLight),
+          ),
+          child: Row(
+            children: [
+              Text(
+                emojis[expense.category] ?? '💸',
+                style: const TextStyle(fontSize: 20),
+              ),
+              const SizedBox(width: 12),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
                     Text(
-                      expense.category,
+                      expense.note.isNotEmpty ? expense.note : expense.category,
                       style: const TextStyle(
-                        color: AppTheme.textSecondary,
-                        fontSize: 12,
+                        color: AppTheme.textPrimary,
+                        fontWeight: FontWeight.w600,
+                        fontSize: 14,
                       ),
                     ),
-                ],
+                    if (expense.note.isNotEmpty)
+                      Text(
+                        expense.category,
+                        style: const TextStyle(
+                          color: AppTheme.textSecondary,
+                          fontSize: 12,
+                        ),
+                      ),
+                  ],
+                ),
               ),
-            ),
-            Text(
-              "₹${expense.amount.toStringAsFixed(0)}",
-              style: const TextStyle(
-                color: AppTheme.accent,
-                fontWeight: FontWeight.w800,
-                fontSize: 16,
+              // Edit hint icon
+              const Icon(
+                Icons.edit_outlined,
+                size: 14,
+                color: AppTheme.textSecondary,
               ),
-            ),
-          ],
+              const SizedBox(width: 8),
+              Text(
+                "₹${expense.amount.toStringAsFixed(0)}",
+                style: const TextStyle(
+                  color: AppTheme.accent,
+                  fontWeight: FontWeight.w800,
+                  fontSize: 16,
+                ),
+              ),
+            ],
+          ),
         ),
       ),
     );

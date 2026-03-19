@@ -77,7 +77,43 @@ class ExpenseProvider extends ChangeNotifier {
       notifyListeners();
     }
   }
+  // ── Update ────────────────────────────────────────────────────
+Future<void> updateExpense(
+  String id, {
+  required double amount,
+  required String category,
+  required String note,
+  required DateTime date,
+}) async {
+  final index = _expenses.indexWhere((e) => e.id == id);
+  if (index < 0) return;
 
+  final old = _expenses[index];
+
+  // Optimistic update
+  _expenses[index] = Expense(
+    id: id,
+    amount: amount,
+    category: category,
+    note: note,
+    date: date,
+  );
+  notifyListeners();
+
+  try {
+    await _expensesCol.doc(id).update({
+      'amount': amount,
+      'category': category,
+      'note': note,
+      'date': date.toIso8601String(),
+    });
+  } catch (e) {
+    debugPrint('ExpenseProvider.updateExpense error: $e');
+    // Roll back on failure
+    _expenses[index] = old;
+    notifyListeners();
+  }
+}
   // ── Remove ────────────────────────────────────────────────────
   Future<void> removeExpense(String id) async {
     _expenses.removeWhere((e) => e.id == id);
