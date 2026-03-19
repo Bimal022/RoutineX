@@ -33,7 +33,7 @@ class _ExpensesTabState extends State<ExpensesTab>
       from = DateTime(now.year, now.month, now.day);
     } else if (_dateFilter == 'Week') {
       from = now.subtract(Duration(days: now.weekday - 1));
-      from = DateTime(from!.year, from.month, from.day);
+      from = DateTime(from.year, from.month, from.day);
     } else if (_dateFilter == 'Month') {
       from = DateTime(now.year, now.month, 1);
     }

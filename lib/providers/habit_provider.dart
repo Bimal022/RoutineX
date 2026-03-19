@@ -150,6 +150,7 @@ class HabitProvider extends ChangeNotifier {
     weekdays: weekdays,
   );
 }
+
       if (hour != null && minute != null) {
         await NotificationService.scheduleHabitNotification(
           habitId: id,
@@ -165,6 +166,65 @@ class HabitProvider extends ChangeNotifier {
       debugPrint('HabitProvider.addHabit error: $e');
     }
   }
+  // ── Update ────────────────────────────────────────────────────
+Future<void> updateHabit(
+  String habitId, {
+  required String name,
+  required String emoji,
+  HabitType type = HabitType.recurring,
+  List<int> weekdays = const [],
+  bool allDay = false,
+  int? hour,
+  int? minute,
+}) async {
+  final index = _habits.indexWhere((h) => h.id == habitId);
+  if (index < 0) return;
+
+  // 1. Cancel the old notification before rescheduling
+  await NotificationService.cancelHabitNotification(habitId);
+
+  // 2. Optimistic in-memory update
+  _habits[index] = Habit(
+    id: habitId,
+    name: name,
+    emoji: emoji,
+    type: type,
+    weekdays: weekdays,
+    hour: hour,
+    minute: minute,
+    allDay: allDay,
+  );
+  notifyListeners();
+
+  try {
+    // 3. Persist to Firestore
+    await _habitsCol.doc(habitId).update({
+      'name': name,
+      'emoji': emoji,
+      'type': type.name,
+      'weekdays': weekdays,
+      'allDay': allDay,
+      'hour': hour,
+      'minute': minute,
+    });
+
+    // 4. Reschedule notification if a time is set
+    if (hour != null && minute != null) {
+      await NotificationService.scheduleHabitNotification(
+        habitId: habitId,
+        habitName: name,
+        emoji: emoji,
+        allDay: allDay,
+        hour: hour,
+        minute: minute,
+        weekdays: weekdays,
+      );
+    }
+  } catch (e) {
+    debugPrint('HabitProvider.updateHabit error: $e');
+    // Optional: revert optimistic update on failure
+  }
+}
 
   // ── Remove ────────────────────────────────────────────────────
   Future<void> removeHabit(String habitId) async {

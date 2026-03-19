@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:routinex/helper/habit_methods/edit_sheet.dart';
 import '../models/habit.dart';
 import '../providers/habit_provider.dart';
 import '../theme.dart';
@@ -30,6 +31,7 @@ class HabitTile extends StatelessWidget {
       onDismissed: (_) => provider.removeHabit(habit.id),
       child: GestureDetector(
         onTap: () => provider.toggleHabit(habit.id),
+        onLongPress: () => HabitHelper.showEditSheet(context: context, habit: habit, provider: provider),
         child: AnimatedContainer(
           duration: const Duration(milliseconds: 250),
           margin: const EdgeInsets.only(bottom: 10),

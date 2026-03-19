@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:permission_handler/permission_handler.dart';
 import 'package:provider/provider.dart';
 import 'package:routinex/auth/provider/user_provider.dart';
 import 'package:routinex/widgets/checkbox/add_expense_sheet.dart';
@@ -275,7 +274,7 @@ class HomeScreen extends StatelessWidget {
 
   Widget _expenseTile(BuildContext context, expense, ExpenseProvider provider) {
     final Map<String, String> emojis = {
-      'Food': '🍔',
+      'Food': '🍜',
       'Transport': '🚗',
       'Shopping': '🛍️',
       'Health': '💊',
