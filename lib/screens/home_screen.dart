@@ -305,7 +305,7 @@ class HomeScreen extends StatelessWidget {
       ),
       onDismissed: (_) => provider.removeExpense(expense.id),
       child: GestureDetector(
-        onLongPress: () =>
+        onTap: () =>
             ExpenseHelper.showEditExpenseSheet(context, expense, provider),
         child: Container(
           margin: const EdgeInsets.only(bottom: 8),

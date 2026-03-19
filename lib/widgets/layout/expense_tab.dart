@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
+import 'package:routinex/helper/expense_helpers/expense_helper.dart';
 import 'package:routinex/models/expense.dart';
 import '../../providers/habit_provider.dart';
 import '../../providers/expense_provider.dart';
@@ -651,55 +652,62 @@ class _ExpenseTimeline extends StatelessWidget {
               const SizedBox(width: 10),
               // Card
               Expanded(
-                child: Container(
-                  margin: EdgeInsets.only(bottom: isLast ? 0 : 8),
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 14,
-                    vertical: 12,
+                child: GestureDetector(
+                  onTap: () => ExpenseHelper.showEditExpenseSheet(
+                    context,
+                    e,
+                    Provider.of<ExpenseProvider>(context, listen: false),
                   ),
-                  decoration: BoxDecoration(
-                    color: AppTheme.surface,
-                    borderRadius: BorderRadius.circular(14),
-                    border: Border.all(color: AppTheme.surfaceLight),
-                  ),
-                  child: Row(
-                    children: [
-                      Text(emoji, style: const TextStyle(fontSize: 22)),
-                      const SizedBox(width: 10),
-                      Expanded(
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text(
-                              e.note.isNotEmpty ? e.note : 'Expense',
-                              style: const TextStyle(
-                                color: AppTheme.textPrimary,
-                                fontWeight: FontWeight.w700,
-                                fontSize: 13,
+                  child: Container(
+                    margin: EdgeInsets.only(bottom: isLast ? 0 : 8),
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 14,
+                      vertical: 12,
+                    ),
+                    decoration: BoxDecoration(
+                      color: AppTheme.surface,
+                      borderRadius: BorderRadius.circular(14),
+                      border: Border.all(color: AppTheme.surfaceLight),
+                    ),
+                    child: Row(
+                      children: [
+                        Text(emoji, style: const TextStyle(fontSize: 22)),
+                        const SizedBox(width: 10),
+                        Expanded(
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                e.note.isNotEmpty ? e.note : 'Expense',
+                                style: const TextStyle(
+                                  color: AppTheme.textPrimary,
+                                  fontWeight: FontWeight.w700,
+                                  fontSize: 13,
+                                ),
+                                maxLines: 1,
+                                overflow: TextOverflow.ellipsis,
                               ),
-                              maxLines: 1,
-                              overflow: TextOverflow.ellipsis,
-                            ),
-                            const SizedBox(height: 2),
-                            Text(
-                              e.category,
-                              style: const TextStyle(
-                                color: AppTheme.textSecondary,
-                                fontSize: 11,
+                              const SizedBox(height: 2),
+                              Text(
+                                e.category,
+                                style: const TextStyle(
+                                  color: AppTheme.textSecondary,
+                                  fontSize: 11,
+                                ),
                               ),
-                            ),
-                          ],
+                            ],
+                          ),
                         ),
-                      ),
-                      Text(
-                        "₹${_fmt(e.amount)}",
-                        style: const TextStyle(
-                          color: AppTheme.accent,
-                          fontWeight: FontWeight.w900,
-                          fontSize: 14,
+                        Text(
+                          "₹${_fmt(e.amount)}",
+                          style: const TextStyle(
+                            color: AppTheme.accent,
+                            fontWeight: FontWeight.w900,
+                            fontSize: 14,
+                          ),
                         ),
-                      ),
-                    ],
+                      ],
+                    ),
                   ),
                 ),
               ),
